@@ -2,15 +2,15 @@ import os.path
 import polyscope as ps
 import numpy as np
 #import pymeshlab as pymesh
-import meshLoading 
+import meshLoading
 
 path = "db/"
-meshType = "Fish/"
-meshId = "222.off"
+meshType = "Chess/"
+meshId = "D01017.obj"
 
 def main():
     ps.init()
-    vertices, faces = meshLoading.read_off(path + meshType + meshId)
+    vertices, faces = meshLoading.verticesAndFaces(path + meshType + meshId)
     vertices = np.array(vertices)
     faces = np.array(faces)
     ps_mesh = ps.register_surface_mesh("mesh", vertices, faces)
