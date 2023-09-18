@@ -1,19 +1,35 @@
 import os.path
-import polyscope as ps
-import numpy as np
+import sys
 #import pymeshlab as pymesh
-import meshLoading
-
+from meshLoading import Mesh
+from renderer import Renderer
+import inputArguments as input
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
 
 def main():
-    ps.init()
-    vertices, faces = meshLoading.verticesAndFaces(path + meshType + meshId)
-    vertices = np.array(vertices)
-    faces = np.array(faces)
-    ps_mesh = ps.register_surface_mesh("mesh", vertices, faces)
-    ps.show()
+    args = sys.argv
+
+    if(len(sys.argv) == 2):
+        if(sys.argv[1] == input.ANALYZE):
+            #do something
+            print("TODO")
+
+        if(sys.argv[1] == input.NORMALIZE):
+            #do something 
+            print("TODO")
+
+    if(len(sys.argv) == 3):
+        if(sys.argv[1] == input.RENDER):
+            r = Renderer()
+            m = Mesh(sys.argv[2])
+            r.renderMesh(m)
+        if(sys.argv[1] == input.ANALYZE):
+            m = Mesh(sys.argv[2])
+            data = m.getAnalyzedData()
+            for d in data:
+                print(d + " --> " + str(data[d]))
+            
 
 main()
