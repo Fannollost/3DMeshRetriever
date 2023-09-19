@@ -2,30 +2,33 @@ import os
 import csv
 from meshLoading import Mesh
 from meshDataTypes import dataTypes
-
+import pandas as pd
 
 class dataExporter:
 
-    def __init__(self):
-        self.path = 'data.csv'
-        self.file = open(self.path, 'w')
+    def __init__(self, fileName, data):
+        self.path = fileName
+        self.file = open(self.path, 'w', newline='')
         self.writer = csv.writer(self.file)
+        self.writer.writerow(data[0].keys())
+        for d in range(len(data)):
+            self.writer.writerow(data[d].values())
 
-    def exportData(self):
-        self.writer.writerow(dataTypes.CLASS.value + ',' + 
-                             dataTypes.AMOUNT_FACES.value + ',' + 
-                             dataTypes.AMOUNT_VERTICES.value + ',' + 
-                             dataTypes.BARY_CENTER.value + ',' + 
-                             dataTypes.SIZE.value + ',' + 
-                             dataTypes.MAX_SIZE.value)
-        
-        directories = os.scandir('db/')
-        print(directories)
-        for directory in directories:
-            files = os.listdir('db/' + directory + '/')   
-            for file in directory:
-                mesh = Mesh('db/' + directory + '/' + file)
-                data = mesh.getAnalyzedData()
-                self.writer.writerow(data)
-        self.file.close()
-        print('EXPORTING DATA SUCCESFULL')
+
+
+def exportBasicData():
+    directories = get_immediate_subdirectories('db/')
+    alldata = []
+    files = get_all_files('db/' + 'bed' + '/') 
+    for file in files:
+        mesh = Mesh('db/' + 'bed' + '/' + file)
+        data = mesh.getAnalyzedData()
+        alldata.append(data)             
+            
+    return alldata
+
+def get_immediate_subdirectories(dir):
+    return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir,name))]
+
+def get_all_files(dir):
+    return  [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]

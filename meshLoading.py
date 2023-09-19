@@ -6,6 +6,7 @@ import pywavefront
 import pandas as pd
 import pymeshlab
 from meshDataTypes import dataTypes as data
+import numpy as np
 
 
 directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
@@ -62,7 +63,7 @@ class Mesh:
             
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
         analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : len(faces), data.AMOUNT_VERTICES.value : len(vertices),
-                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : boundingbox, data.MAX_SIZE.value : max(boundingbox) }
+                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
         return analyzedData
 
 

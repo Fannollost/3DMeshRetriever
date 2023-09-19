@@ -4,7 +4,7 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
-from dataExporter import dataExporter
+from dataExporter import dataExporter, exportBasicData
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -21,10 +21,6 @@ def main():
             #do something 
             print("TODO")
 
-        if(sys.argv[1] == input.EXPORT):
-            exporter = dataExporter()
-            exporter.exportData()
-
     if(len(sys.argv) == 3):
         if(sys.argv[1] == input.RENDER):
             r = Renderer()
@@ -35,6 +31,11 @@ def main():
             data = m.getAnalyzedData()
             for d in data:
                 print(d + " --> " + str(data[d]))
+        
+        if(sys.argv[1] == input.EXPORT):
+            if(sys.argv[2] == input.BASICDATA):
+                data = exportBasicData()
+                exporter = dataExporter('basicdata.csv',data)
             
 
 main()
