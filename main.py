@@ -4,6 +4,7 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
+from dataExporter import dataExporter
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -19,6 +20,10 @@ def main():
         if(sys.argv[1] == input.NORMALIZE):
             #do something 
             print("TODO")
+
+        if(sys.argv[1] == input.EXPORT):
+            exporter = dataExporter()
+            exporter.exportData()
 
     if(len(sys.argv) == 3):
         if(sys.argv[1] == input.RENDER):
