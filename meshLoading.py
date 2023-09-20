@@ -7,7 +7,8 @@ import pandas as pd
 import pymeshlab
 from meshDataTypes import dataTypes as data
 import numpy as np
-
+import bpy
+from bpy import context
 
 directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
                "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
@@ -43,12 +44,14 @@ class Mesh:
 
     def getAnalyzedData(self):
         file = Path(self.meshPath)
-        classType = os.path.relpath(file.parent, file.parent.parent)
-        bary_data = self.pymesh.get_geometric_measures()
-        vertices, faces = self.verticesAndFaces()
+        self.classType = os.path.relpath(file.parent, file.parent.parent)
+        self.bary_data = self.pymesh.get_geometric_measures()
+        self.vertices, self.faces = self.verticesAndFaces()
+        print(self.meshPath.split('/'))
+        self.fileName = self.meshPath.split('/')[2]
         quads = False
         triangles = False
-        for face in faces:
+        for face in self.faces:
             if len(face) == 4: 
                 quads = True
             if len(face) == 3:
@@ -62,8 +65,48 @@ class Mesh:
             print("We have quads only")
             
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
-        analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : len(faces), data.AMOUNT_VERTICES.value : len(vertices),
-                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
+        self.boundingbox = boundingbox
+        self.maxSize = max(boundingbox)
+        analyzedData = { data.CLASS.value : self.classType, data.AMOUNT_FACES.value : len(self.faces), data.AMOUNT_VERTICES.value : len(self.vertices),
+                         data.BARY_CENTER.value : self.bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
         return analyzedData
+
+    def normaliseMesh(self):
+        self.getAnalyzedData()
+        self.removeUnwantedMeshData()
+        translated = self.centerBarycenters()
+        normalised = self.normaliseVertices(translated)
+        self.SaveMesh(normalised, self.faces, 'normalisedDB/' + self.classType + '/' + str(self.fileName))
+
+    def normaliseVertices(self, vertices):
+        x_min = min(point[0] for point in vertices)
+        y_min = min(point[1] for point in vertices)
+        z_min = min(point[2] for point in vertices)
+
+        normalized_x = ((point[0] - x_min / self.maxSize - 0.5 for point in vertices) )
+        normalized_y = ((point[1] - y_min / self.maxSize - 0.5 for point in vertices) ) 
+        normalized_z = ((point[2] - z_min / self.maxSize - 0.5 for point in vertices) ) 
+
+        self.normalized = list(zip(normalized_x,normalized_y,normalized_z))
+        return self.normalized
+
+    def centerBarycenters(self):
+        translated = [ vertex - self.bary_data['barycenter'] for vertex in self.vertices]
+        return translated
+
+    def removeUnwantedMeshData(self):
+        self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
+        self.pymesh.apply_filter('meshing_remove_duplicate_faces')
+        self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
+
+    def SaveMesh(sellf, vertices, faces, file_path):
+        with open(file_path, 'w') as obj_file:
+            for vertex in vertices:
+                obj_file.write(f"v {vertex[0]} {vertex[1]} {vertex[2]}\n")
+        
+            for face in faces:
+                # In OBJ format, face indices are 1-based, so we need to add 1 to each index.
+                face_str = "f " + " ".join(str(idx + 1) for idx in face) + "\n"
+                obj_file.write(face_str)
 
 

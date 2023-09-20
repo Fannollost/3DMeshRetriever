@@ -15,17 +15,33 @@ class dataExporter:
             self.writer.writerow(data[d].values())
 
 
-
-def exportBasicData():
-    directories = get_immediate_subdirectories('db/')
+def exportBasicData(normalised):
+    if(normalised):
+        db = 'normalisedDB/'
+    else:
+        db = 'db/'
+    directories = get_immediate_subdirectories(db)
     alldata = []
-    files = get_all_files('db/' + 'bed' + '/') 
+    files = get_all_files(db + 'bed' + '/') 
     for file in files:
-        mesh = Mesh('db/' + 'bed' + '/' + file)
+        mesh = Mesh(db + 'bed' + '/' + file)
         data = mesh.getAnalyzedData()
         alldata.append(data)             
             
     return alldata
+
+def normalizeDB():
+    directories = get_immediate_subdirectories('db/')
+    for dir in directories:
+        if(os.path.exists('normalisedDB/' + dir) == False):
+            os.makedirs('normalisedDB/' + dir)
+        normalizeFolder(dir)
+
+def normalizeFolder(folderName):
+    files = get_all_files('db/' + folderName + '/') 
+    for file in files:
+        mesh = Mesh('db/' + folderName + '/' + file)
+        mesh.normaliseMesh()             
 
 def get_immediate_subdirectories(dir):
     return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir,name))]
