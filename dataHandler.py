@@ -16,7 +16,7 @@ class dataExporter:
 
 
 def exportBasicData(normalised):
-    if(normalised):
+    if(normalised == 'normalised'):
         db = 'normalisedDB/'
     else:
         db = 'db/'

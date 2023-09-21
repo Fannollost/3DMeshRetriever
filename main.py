@@ -35,15 +35,18 @@ def main():
             if(os.path.exists('normalisedDB') == False):
                 os.mkdir('normalisedDB')
             if(sys.argv[2] != ''):
+                if(os.path.exists('normalisedDB/' + sys.argv[2] + '/') == False):
+                    os.makedirs('normalisedDB/' + sys.argv[2] + '/')
                 normalizeFolder(sys.argv[2])
             else:
                 normalizeDB()
-        # TO EXPORT DATA, USE:              python main.py export
-        # TO EXPORT NORMALISED DATA, USE:   python main.py export normalised
+        # TO EXPORT DATA, USE:              python main.py export basicdata
+        # TO EXPORT NORMALISED DATA, USE:   python main.py export basicdata normalised
         if(sys.argv[1] == input.EXPORT):
             if(sys.argv[2] == input.BASICDATA):
                 data = exportBasicData(sys.argv[3])
                 exporter = dataExporter('basicdata.csv',data)
+            
             
 
 main()

@@ -7,8 +7,6 @@ import pandas as pd
 import pymeshlab
 from meshDataTypes import dataTypes as data
 import numpy as np
-import bpy
-from bpy import context
 
 directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
                "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
@@ -47,7 +45,16 @@ class Mesh:
         self.classType = os.path.relpath(file.parent, file.parent.parent)
         self.bary_data = self.pymesh.get_geometric_measures()
         self.vertices, self.faces = self.verticesAndFaces()
-        print(self.meshPath.split('/'))
+        self.barycenter = [0,0,0]
+        for vertex in self.vertices:
+            self.barycenter[0] +=vertex[0]
+            self.barycenter[1] +=vertex[1]
+            self.barycenter[2] +=vertex[2]
+            
+        self.barycenter[0] /= len(self.vertices)
+        self.barycenter[1] /= len(self.vertices)
+        self.barycenter[2] /= len(self.vertices)
+        
         self.fileName = self.meshPath.split('/')[2]
         quads = False
         triangles = False
