@@ -22,11 +22,12 @@ def exportBasicData(normalised):
         db = 'db/'
     directories = get_immediate_subdirectories(db)
     alldata = []
-    files = get_all_files(db + 'bed' + '/') 
-    for file in files:
-        mesh = Mesh(db + 'bed' + '/' + file)
-        data = mesh.getAnalyzedData()
-        alldata.append(data)             
+    for dir in directories:
+        files = get_all_files(db + dir + '/') 
+        for file in files:
+            mesh = Mesh(db + dir + '/' + file)
+            data = mesh.getAnalyzedData()
+            alldata.append(data)             
             
     return alldata
 
