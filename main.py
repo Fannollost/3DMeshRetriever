@@ -37,7 +37,8 @@ def main():
             if(sys.argv[2] != ''):
                 if(os.path.exists('normalisedDB/' + sys.argv[2] + '/') == False):
                     os.makedirs('normalisedDB/' + sys.argv[2] + '/')
-                normalizeFolder(sys.argv[2])
+                folderData = normalizeFolder(sys.argv[2])
+                dataExporter('normalisedData.csv', folderData)
             else:
                 normalizeDB()
         # TO EXPORT DATA, USE:              python main.py export basicdata

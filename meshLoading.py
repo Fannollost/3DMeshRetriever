@@ -7,6 +7,7 @@ import pandas as pd
 import pymeshlab
 from meshDataTypes import dataTypes as data
 import numpy as np
+import tripy
 
 directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
                "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
@@ -45,16 +46,8 @@ class Mesh:
         self.classType = os.path.relpath(file.parent, file.parent.parent)
         self.bary_data = self.pymesh.get_geometric_measures()
         self.vertices, self.faces = self.verticesAndFaces()
-        self.barycenter = [0,0,0]
-        for vertex in self.vertices:
-            self.barycenter[0] +=vertex[0]
-            self.barycenter[1] +=vertex[1]
-            self.barycenter[2] +=vertex[2]
-            
-        self.barycenter[0] /= len(self.vertices)
-        self.barycenter[1] /= len(self.vertices)
-        self.barycenter[2] /= len(self.vertices)
-        
+        self.barycenter = self.getBarycenter(self.vertices, self.faces)
+
         self.fileName = self.meshPath.split('/')[2]
         quads = False
         triangles = False
@@ -78,21 +71,59 @@ class Mesh:
                          data.BARY_CENTER.value : self.bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
         return analyzedData
 
+    def getBarycenter(self, vertices, faces):
+        barycenter = [0,0,0]
+        total_weight = 0.0
+        for face in faces:
+            centroid = np.mean(face, axis=0)
+            area = tripy.area(np.array(zip(face)))
+            weighted = centroid * area
+            barycenter += weighted
+            total_weight += area
+        
+        return barycenter / total_weight
+        for vertex in vertices:
+            barycenter[0] +=vertex[0]
+            barycenter[1] +=vertex[1]
+            barycenter[2] +=vertex[2]
+            # TODO
+        barycenter[0] /= len(vertices)
+        barycenter[1] /= len(vertices)
+        barycenter[2] /= len(vertices)
+        return barycenter
+
+    def getBoundingBox(self, vertices):
+        x_coordinates, y_coordinates, z_coordinates = zip(*vertices)
+        return [(min(x_coordinates), min(y_coordinates), min(z_coordinates)), (max(x_coordinates), max(y_coordinates), max(z_coordinates))]
+
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
         translated = self.centerBarycenters()
         normalised = self.normaliseVertices(translated)
         self.SaveMesh(normalised, self.faces, 'normalisedDB/' + self.classType + '/' + str(self.fileName))
+        normalisedData = { data.CLASS.value : self.classType, data.AMOUNT_FACES.value : len(self.faces), data.AMOUNT_VERTICES.value : len(translated),
+                         data.BARY_CENTER.value : self.getBarycenter(normalised, self.faces), data.SIZE.value : np.array(self.getBoundingBox(normalised)) } #, data.MAX_SIZE.value : max(normalised) }
+        return normalisedData
 
     def normaliseVertices(self, vertices):
+        """min = np.min(vertices, axis=0)
+        max = np.max(vertices, axis=0)
+
+        dimension = max - min
+        scaling = 1 / np.max(dimension)
+
+        print(scaling)
+        vertices = [vertex * scaling for vertex in vertices]
+        return vertices
+        """
         x_min = min(point[0] for point in vertices)
         y_min = min(point[1] for point in vertices)
         z_min = min(point[2] for point in vertices)
 
-        normalized_x = ((point[0] - x_min / self.maxSize - 0.5 for point in vertices) )
-        normalized_y = ((point[1] - y_min / self.maxSize - 0.5 for point in vertices) ) 
-        normalized_z = ((point[2] - z_min / self.maxSize - 0.5 for point in vertices) ) 
+        normalized_x = ((point[0] - x_min) / self.maxSize - 0.5 for point in vertices)
+        normalized_y = ((point[1] - y_min) / self.maxSize - 0.5 for point in vertices) 
+        normalized_z = ((point[2] - z_min) / self.maxSize - 0.5 for point in vertices) 
 
         self.normalized = list(zip(normalized_x,normalized_y,normalized_z))
         return self.normalized
