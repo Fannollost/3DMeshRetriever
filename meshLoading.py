@@ -4,7 +4,7 @@ import sys
 import glob 
 import pywavefront 
 import pandas as pd
-import pymeshlab
+import pymeshlab as pml
 from meshDataTypes import dataTypes as data
 import numpy as np
 import tripy
@@ -12,13 +12,15 @@ import tripy
 directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
                "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
                "Octobus", "Plier", "Table", "Teddy", "Vase"] 
+target_edge_length = 0.02
+targetTriangles = 10000
 
 class Mesh:
     
     def __init__(self, meshPath):
-        pymeshlab.print_pymeshlab_version()
+        pml.print_pymeshlab_version()
         self.meshPath = meshPath
-        self.pymesh = pymeshlab.MeshSet()   
+        self.pymesh = pml.MeshSet()   
         self.pymesh.load_new_mesh(meshPath)
         self.mesh = self.pymesh.current_mesh()
 
@@ -146,5 +148,31 @@ class Mesh:
                 # In OBJ format, face indices are 1-based, so we need to add 1 to each index.
                 face_str = "f " + " ".join(str(idx + 1) for idx in face) + "\n"
                 obj_file.write(face_str)
+    
+    def remeshUP(path):
+        minTriangles = targetTriangles * 0.8
 
+        mesh_lowpoly = pml.MeshSet()
+        mesh_lowpoly.load_new_mesh(path)
 
+        iteration = 0
+
+        while(mesh_lowpoly.current_mesh().face_number() < minTriangles or iteration > 10):
+            iteration += 1
+            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(mesh_lowpoly.current_mesh().face_number())
+
+    def remeshDOWN(path):
+        minTriangles = targetTriangles * 1.2
+
+        mesh_lowpoly = pml.MeshSet()
+        mesh_lowpoly.load_new_mesh(path)
+
+        iteration = 0
+
+        while(mesh_lowpoly.current_mesh().face_number() > minTriangles or iteration > 10):
+            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(mesh_lowpoly.current_mesh().face_number())
+        
+    def saveMesh(mesh, path):
+        mesh.save_current_mesh(path)
