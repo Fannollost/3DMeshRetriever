@@ -9,9 +9,7 @@ from meshDataTypes import dataTypes as data
 import numpy as np
 import tripy
 
-directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
-               "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
-               "Octobus", "Plier", "Table", "Teddy", "Vase"] 
+
 target_edge_length = 0.02
 targetTriangles = 10000
 
@@ -76,10 +74,22 @@ class Mesh:
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
+        self.remesh()
         self.normaliseVertices()
         d = self.getAnalyzedData()
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
         return d
+
+    def remesh(self):
+        maxVertices = 100000
+        minVertices = 10000
+
+        if(self.mesh.vertex_number() > maxVertices):
+            self.remeshDOWN()
+            print("DOWN!")
+        if(self.mesh.vertex_number() < minVertices):
+            self.remeshUP()
+            print("UP!")
 
     def normaliseVertices(self):
         d = self.getAnalyzedData()
@@ -109,30 +119,19 @@ class Mesh:
         else:
             self.pymesh.save_current_mesh(file_path)
     
-    def remeshUP(path):
+    def remeshUP(self):
         minTriangles = targetTriangles * 0.8
-
-        mesh_lowpoly = pml.MeshSet()
-        mesh_lowpoly.load_new_mesh(path)
-
         iteration = 0
 
-        while(mesh_lowpoly.current_mesh().face_number() < minTriangles or iteration > 10):
+        while(self.mesh.face_number() < minTriangles or iteration > 10):
             iteration += 1
-            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(mesh_lowpoly.current_mesh().face_number())
+            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(self.pymesh.current_mesh().face_number())
 
-    def remeshDOWN(path):
+    def remeshDOWN(self):
         minTriangles = targetTriangles * 1.2
-
-        mesh_lowpoly = pml.MeshSet()
-        mesh_lowpoly.load_new_mesh(path)
-
         iteration = 0
 
-        while(mesh_lowpoly.current_mesh().face_number() > minTriangles or iteration > 10):
-            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(mesh_lowpoly.current_mesh().face_number())
-        
-    def saveMesh(mesh, path):
-        mesh.save_current_mesh(path)
+        while(self.mesh.face_number() > minTriangles or iteration > 10):
+            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(self.pymesh.current_mesh().face_number())
