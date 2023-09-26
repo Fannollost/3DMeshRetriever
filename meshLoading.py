@@ -7,10 +7,9 @@ import pandas as pd
 import pymeshlab as pml
 from meshDataTypes import dataTypes as data
 import numpy as np
+import tripy
 
-directories = ["Airplane", "Ant", "Armadillo", "Bearing", "Bird", "Bust", "Chair", "Cup", 
-               "Fish", "FourLeg", "Glasses", "Hand", "Human", "Mech", "Octopus", "Plier", 
-               "Octobus", "Plier", "Table", "Teddy", "Vase"] 
+
 target_edge_length = 0.02
 targetTriangles = 10000
 
@@ -44,23 +43,14 @@ class Mesh:
 
     def getAnalyzedData(self):
         file = Path(self.meshPath)
-        self.classType = os.path.relpath(file.parent, file.parent.parent)
-        self.bary_data = self.pymesh.get_geometric_measures()
-        self.vertices, self.faces = self.verticesAndFaces()
-        self.barycenter = [0,0,0]
-        for vertex in self.vertices:
-            self.barycenter[0] +=vertex[0]
-            self.barycenter[1] +=vertex[1]
-            self.barycenter[2] +=vertex[2]
-            
-        self.barycenter[0] /= len(self.vertices)
-        self.barycenter[1] /= len(self.vertices)
-        self.barycenter[2] /= len(self.vertices)
+        classType = os.path.relpath(file.parent, file.parent.parent)
         
+        bary_data = self.pymesh.get_geometric_measures()
         self.fileName = self.meshPath.split('/')[2]
+        
         quads = False
         triangles = False
-        for face in self.faces:
+        for face in self.mesh.polygonal_face_list():
             if len(face) == 4: 
                 quads = True
             if len(face) == 3:
@@ -74,74 +64,74 @@ class Mesh:
             print("We have quads only")
             
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
-        self.boundingbox = boundingbox
-        self.maxSize = max(boundingbox)
-        analyzedData = { data.CLASS.value : self.classType, data.AMOUNT_FACES.value : len(self.faces), data.AMOUNT_VERTICES.value : len(self.vertices),
-                         data.BARY_CENTER.value : self.bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
+        analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
+                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
         return analyzedData
+
+    def getBoundingBox(self):
+        return [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
 
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
-        translated = self.centerBarycenters()
-        normalised = self.normaliseVertices(translated)
-        self.SaveMesh(normalised, self.faces, 'normalisedDB/' + self.classType + '/' + str(self.fileName))
+        self.remesh()
+        self.normaliseVertices()
+        d = self.getAnalyzedData()
+        self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
+        return d
 
-    def normaliseVertices(self, vertices):
-        x_min = min(point[0] for point in vertices)
-        y_min = min(point[1] for point in vertices)
-        z_min = min(point[2] for point in vertices)
+    def remesh(self):
+        maxVertices = 100000
+        minVertices = 10000
 
-        normalized_x = ((point[0] - x_min / self.maxSize - 0.5 for point in vertices) )
-        normalized_y = ((point[1] - y_min / self.maxSize - 0.5 for point in vertices) ) 
-        normalized_z = ((point[2] - z_min / self.maxSize - 0.5 for point in vertices) ) 
+        if(self.mesh.vertex_number() > maxVertices):
+            self.remeshDOWN()
+            print("DOWN!")
+        if(self.mesh.vertex_number() < minVertices):
+            self.remeshUP()
+            print("UP!")
 
-        self.normalized = list(zip(normalized_x,normalized_y,normalized_z))
-        return self.normalized
+    def normaliseVertices(self):
+        d = self.getAnalyzedData()
+        self.pymesh.compute_matrix_from_translation(traslmethod='XYZ translation', axisx = -1 * d[data.BARY_CENTER.value][0],
+                                                     axisy = -1 * d[data.BARY_CENTER.value][1],
+                                                     axisz = -1 * d[data.BARY_CENTER.value][2])
+        d = self.getAnalyzedData()
+        self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
 
     def centerBarycenters(self):
-        translated = [ vertex - self.bary_data['barycenter'] for vertex in self.vertices]
+        translated = [ vertex - self.bary_data['barycenter'] for vertex in self.mesh.ver]
         return translated
 
     def removeUnwantedMeshData(self):
         self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
         self.pymesh.apply_filter('meshing_remove_duplicate_faces')
         self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
+        self.pymesh.current_mesh()
 
-    def SaveMesh(sellf, vertices, faces, file_path):
-        with open(file_path, 'w') as obj_file:
-            for vertex in vertices:
-                obj_file.write(f"v {vertex[0]} {vertex[1]} {vertex[2]}\n")
-        
-            for face in faces:
-                # In OBJ format, face indices are 1-based, so we need to add 1 to each index.
-                face_str = "f " + " ".join(str(idx + 1) for idx in face) + "\n"
-                obj_file.write(face_str)
+    def SaveMesh(self, file_path):
+        #Create parent dir if it doesn't exist
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        #Save the file in off format
+        if file_path==None:
+            self.pymesh.save_current_mesh(file_path)
+        else:
+            self.pymesh.save_current_mesh(file_path)
     
-    def remeshUP(path):
+    def remeshUP(self):
         minTriangles = targetTriangles * 0.8
-
-        mesh_lowpoly = pml.MeshSet()
-        mesh_lowpoly.load_new_mesh(path)
-
         iteration = 0
 
-        while(mesh_lowpoly.current_mesh().face_number() < minTriangles or iteration > 10):
+        while(self.mesh.face_number() < minTriangles or iteration > 10):
             iteration += 1
-            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(mesh_lowpoly.current_mesh().face_number())
+            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(self.pymesh.current_mesh().face_number())
 
-    def remeshDOWN(path):
+    def remeshDOWN(self):
         minTriangles = targetTriangles * 1.2
-
-        mesh_lowpoly = pml.MeshSet()
-        mesh_lowpoly.load_new_mesh(path)
-
         iteration = 0
 
-        while(mesh_lowpoly.current_mesh().face_number() > minTriangles or iteration > 10):
-            mesh_lowpoly.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(mesh_lowpoly.current_mesh().face_number())
-        
-    def saveMesh(mesh, path):
-        mesh.save_current_mesh(path)
+        while(self.mesh.face_number() > minTriangles or iteration > 10):
+            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            print(self.pymesh.current_mesh().face_number())

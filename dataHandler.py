@@ -33,16 +33,22 @@ def exportBasicData(normalised):
 
 def normalizeDB():
     directories = get_immediate_subdirectories('db/')
+    DBdata = []
     for dir in directories:
         if(os.path.exists('normalisedDB/' + dir) == False):
             os.makedirs('normalisedDB/' + dir)
-        normalizeFolder(dir)
+        folderData = normalizeFolder(dir)
+        DBdata.append(folderData)
 
 def normalizeFolder(folderName):
     files = get_all_files('db/' + folderName + '/') 
+    folderData = []
     for file in files:
         mesh = Mesh('db/' + folderName + '/' + file)
-        mesh.normaliseMesh()             
+        data = mesh.normaliseMesh() 
+        folderData.append(data)
+    return folderData
+                
 
 def get_immediate_subdirectories(dir):
     return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir,name))]
