@@ -71,14 +71,6 @@ class Mesh:
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
         return d
 
-    def remesh(self):
-        if(self.mesh.vertex_number() > targetVertices):
-            print("DOWN!")
-            self.remeshDOWN()
-        if(self.mesh.vertex_number() < targetVertices):
-            print("UP!")
-            self.remeshUP()
-
     def normaliseVertices(self):
         d = self.getAnalyzedData()
         self.pymesh.compute_matrix_from_translation(traslmethod='XYZ translation', axisx = -1 * d[data.BARY_CENTER.value][0],
@@ -107,21 +99,19 @@ class Mesh:
         else:
             self.pymesh.save_current_mesh(file_path)
     
-    def remeshUP(self):
-        minVertices = targetVertices * 0.8
-        targetFaceNumber = 10000
-        while(self.mesh.vertex_number() < minVertices):
-            try:
-                self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
-            except:
-                self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
-                self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
-            print(self.pymesh.current_mesh().vertex_number())
+    def remesh(self):
+        targetVertices = 10000
+        while(self.mesh.vertex_number() < targetVertices - 100):
+            if(self.mesh.vertex_number() < targetVertices - 100):
+                try:
+                    self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
+                except:
+                    self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
+                    self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+            elif(self.mesh.vertex_numbers() > targetVertices - 100):
+                self.ms.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / self.mesh.vertex_number())
 
-    def remeshDOWN(self):
-        minVertices = targetVertices * 1.2
-        targetFaceNumber = 10000
-        while(self.mesh.vertex_number() > minVertices):
-            self.pymesh.apply_filter('simplification_quadric_edge_collapse_decimation', targetfacenum=targetVertices, preservenormal=True)
-            #self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=7)
-            print(self.pymesh.current_mesh().vertex_number())
+        if(self.mesh.vertex_number() - 100 > targetVertices):
+           self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / self.mesh.vertex_number())
+
+        print(self.pymesh.current_mesh().vertex_number())
