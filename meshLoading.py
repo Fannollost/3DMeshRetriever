@@ -7,11 +7,11 @@ import pandas as pd
 import pymeshlab as pml
 from meshDataTypes import dataTypes as data
 import numpy as np
-import tripy
+import mathHelper
 
 
 target_edge_length = 0.02
-targetTriangles = 10000
+targetVertices = 10000
 
 class Mesh:
     
@@ -30,16 +30,6 @@ class Mesh:
         vertices = obj_data.vertices
         faces = [face for mesh in obj_data.mesh_list for face in mesh.faces]
         return vertices, faces
-    
-    """
-    Loads all the meshes
-    """
-    def loadAllMeshes(self):
-        for dir in directories:
-            for name in glob.glob('/db/' + dir + ''):
-                if(name.__contains__("labels")):
-                    continue
-                self.verticesAndFaces(name)
 
     def getAnalyzedData(self):
         file = Path(self.meshPath)
@@ -62,10 +52,11 @@ class Mesh:
             print("We only have triangles")
         else:
             print("We have quads only")
-            
+        
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
         analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
-                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox) }
+                         data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox),
+                         data.DISTANCE_ORIGIN.value : mathHelper.length(bary_data['barycenter']) }
         return analyzedData
 
     def getBoundingBox(self):
@@ -81,15 +72,12 @@ class Mesh:
         return d
 
     def remesh(self):
-        maxVertices = 100000
-        minVertices = 10000
-
-        if(self.mesh.vertex_number() > maxVertices):
-            self.remeshDOWN()
+        if(self.mesh.vertex_number() > targetVertices):
             print("DOWN!")
-        if(self.mesh.vertex_number() < minVertices):
-            self.remeshUP()
+            self.remeshDOWN()
+        if(self.mesh.vertex_number() < targetVertices):
             print("UP!")
+            self.remeshUP()
 
     def normaliseVertices(self):
         d = self.getAnalyzedData()
@@ -120,18 +108,20 @@ class Mesh:
             self.pymesh.save_current_mesh(file_path)
     
     def remeshUP(self):
-        minTriangles = targetTriangles * 0.8
-        iteration = 0
-
-        while(self.mesh.face_number() < minTriangles or iteration > 10):
-            iteration += 1
-            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(self.pymesh.current_mesh().face_number())
+        minVertices = targetVertices * 0.8
+        targetFaceNumber = 10000
+        while(self.mesh.vertex_number() < minVertices):
+            try:
+                self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
+            except:
+                self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
+                self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+            print(self.pymesh.current_mesh().vertex_number())
 
     def remeshDOWN(self):
-        minTriangles = targetTriangles * 1.2
-        iteration = 0
-
-        while(self.mesh.face_number() > minTriangles or iteration > 10):
-            self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            print(self.pymesh.current_mesh().face_number())
+        minVertices = targetVertices * 1.2
+        targetFaceNumber = 10000
+        while(self.mesh.vertex_number() > minVertices):
+            self.pymesh.apply_filter('simplification_quadric_edge_collapse_decimation', targetfacenum=targetVertices, preservenormal=True)
+            #self.pymesh.remeshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=7)
+            print(self.pymesh.current_mesh().vertex_number())

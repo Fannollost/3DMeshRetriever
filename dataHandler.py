@@ -39,6 +39,7 @@ def normalizeDB():
             os.makedirs('normalisedDB/' + dir)
         folderData = normalizeFolder(dir)
         DBdata.append(folderData)
+    return DBdata
 
 def normalizeFolder(folderName):
     files = get_all_files('db/' + folderName + '/') 

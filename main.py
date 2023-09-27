@@ -31,16 +31,19 @@ def main():
             for d in data:
                 print(d + " --> " + str(data[d]))
         # TO NORMALISE, USE:                python main.py normalise
+        # TO NORMALISE EVERYTHING, USE      python main.py normalise all
         if(sys.argv[1] == input.NORMALISE):
             if(os.path.exists('normalisedDB') == False):
                 os.mkdir('normalisedDB')
-            if(sys.argv[2] != ''):
+            if(sys.argv[2] != 'all'):
+                print(sys.argv[2])
                 if(os.path.exists('normalisedDB/' + sys.argv[2] + '/') == False):
                     os.makedirs('normalisedDB/' + sys.argv[2] + '/')
                 folderData = normalizeFolder(sys.argv[2])
                 dataExporter('normalisedData.csv', folderData)
             else:
-                normalizeDB()
+                dbData = normalizeDB()
+                dataExporter('normalisedDBData.csv', dbData)
         # TO EXPORT DATA, USE:              python main.py export basicdata
         # TO EXPORT NORMALISED DATA, USE:   python main.py export basicdata normalised
         if(sys.argv[1] == input.EXPORT):
