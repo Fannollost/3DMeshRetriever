@@ -11,3 +11,7 @@ def dist(a, b):
 
 def length(vect):
     return dist(vect, [0, 0, 0])
+
+
+def crossProduct(a, b):
+    return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
