@@ -50,6 +50,9 @@ def main():
             if(sys.argv[2] == input.BASICDATA):
                 data = exportBasicData(sys.argv[3])
                 exporter = dataExporter('basicdata.csv',data)
+            if(sys.argv[2] == input.NORMALISE):
+                data = exportBasicData('normalised')
+                exporter = dataExporter('normalisedDBData.csv',data)
             
             
 

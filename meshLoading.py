@@ -16,7 +16,8 @@ targetVertices = 10000
 class Mesh:
     
     def __init__(self, meshPath):
-        pml.print_pymeshlab_version()
+        # pml.print_pymeshlab_version()
+        print(meshPath)
         self.meshPath = meshPath
         self.pymesh = pml.MeshSet()   
         self.pymesh.load_new_mesh(meshPath)
@@ -48,10 +49,10 @@ class Mesh:
         
         if quads and triangles:
             print("We have a mix of triangles and quads")
-        if triangles and not(quads):
-            print("We only have triangles")
-        else:
+        if quads and not(triangles):
             print("We have quads only")
+        # else:
+        #     print("We only have triangles")
         
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
         analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
