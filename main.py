@@ -5,6 +5,8 @@ from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
 from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB
+from histogram import Graph
+
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -58,12 +60,19 @@ def main():
         # TO EXPORT NORMALISED DATA, USE:   python main.py export basicdata normalised
         if(sys.argv[1] == input.EXPORT):
             if(sys.argv[2] == input.BASICDATA):
-                data = exportBasicData(sys.argv[3])
+                data = exportBasicData('false')
                 exporter = dataExporter('basicdata.csv',data)
             if(sys.argv[2] == input.NORMALISE):
                 data = exportBasicData('normalised')
                 exporter = dataExporter('normalisedDBData.csv',data)
-            
+
+    if(sys.argv[1] == input.GRAPH):
+        h = Graph()
+        # h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
+        # h.getHisto('normalisedDBData.csv','Barycenter distance to origin', 'normalised data')
+        #h.getBoxplot('Barycenter distance to origin', 'Barycenter distance')
+        h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
+        h.showPlots()
             
 
 main()
