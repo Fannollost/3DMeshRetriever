@@ -18,12 +18,22 @@ def main():
             #do something
             print("TODO")
 
+    if(len(sys.argv) == 5):
+        # TO RENDER WITH WIREFRAME, USE:    python main.py render path_file wireframe
+        if(sys.argv[1] == input.RENDER and sys.argv[4] == 'wireframe'):
+            r = Renderer()
+            r.renderWireFrame(sys.argv[3])
+
     if(len(sys.argv) == 3 or len(sys.argv) == 4):
         # TO RENDER, USE:                   python main.py render path_file
         if(sys.argv[1] == input.RENDER):
             r = Renderer()
-            m = Mesh(sys.argv[2])
-            r.renderMesh(m)
+            if(len(sys.argv) == 3):
+                m = Mesh(sys.argv[2])
+                r.renderMesh(m)
+            else:                          #python main.py render path_file (any character)
+                r.renderWireFrame(sys.argv[2])
+                
         # TO ANALYZE, USE:                  python main.py analyze path_file
         if(sys.argv[1] == input.ANALYZE):
             m = Mesh(sys.argv[2])
