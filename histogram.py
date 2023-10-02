@@ -9,14 +9,15 @@ no_bins = int(round(np.sqrt(N)))  # Recommended number of bins
 class Graph():
     def getHisto(self, csv, data, title):
         df = pd.read_csv(csv)
-        data = df[data]
+        db_data = df[data]
 
         # Compute histogram
-        counts, bins = np.histogram(data, bins=no_bins)
+        counts, bins = np.histogram(db_data, bins=no_bins)
 
         # Plot histogram
         fig, ax = plt.subplots()
-        ax.hist(bins[:-1], weights=counts, range=[-0.1, 1])
+        ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
+        #ax.hist(bins[:-1], weights=counts, range=[0, 12000])
         ax.set_title(title)
         ax.set_ylabel("Number of samples per bin")
         ax.set_xlabel(data)
@@ -47,8 +48,11 @@ class Graph():
         data_1 = df1[data]
         df2 = pd.read_csv('normalisedDBData.csv')
         data_2 = df2[data]
-        plt.plot(data_1)
-        #plt.plot(data_2)
+        #plt.plot(data_1)
+        plt.plot(data_1, label=title)
+        plt.xlabel("Model nr.")
+        plt.ylabel("Value of data")
+        plt.legend(loc="best")
 
     def showPlots(self):
         plt.show()

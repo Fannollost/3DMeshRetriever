@@ -68,10 +68,20 @@ def main():
 
     if(sys.argv[1] == input.GRAPH):
         h = Graph()
-        # h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
+        #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
         # h.getHisto('normalisedDBData.csv','Barycenter distance to origin', 'normalised data')
         #h.getBoxplot('Barycenter distance to origin', 'Barycenter distance')
-        h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
+        #h.getHisto('basicdata.csv', 'Amount of Vertices', 'Amount of Vertices')
+        #h.getHisto('basicdata.csv', 'Amount of Faces', 'Amount of Faces')
+        #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
+        #h.getHisto('normalisedDBData.csv', 'Amount of Vertices', 'Amount of Vertices')
+        #h.getHisto('normalisedDBData.csv', 'Amount of Faces', 'Amount of Faces')
+        h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
+        #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
+        
+        h.showPlots()
+        h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
+        #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
         h.showPlots()
             
 
