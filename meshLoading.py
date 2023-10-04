@@ -17,7 +17,6 @@ targetVertices = 10000
 class Mesh:
     
     def __init__(self, meshPath):
-        pml.print_pymeshlab_version()
         self.meshPath = meshPath
         self.pymesh = pml.MeshSet()   
         self.pymesh.load_new_mesh(meshPath)
@@ -78,8 +77,43 @@ class Mesh:
                                                      axisy = -1 * d[data.BARY_CENTER.value][1],
                                                      axisz = -1 * d[data.BARY_CENTER.value][2])
         self.alignAxises()
+        self.flipMesh()
         d = self.getAnalyzedData()
         self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
+
+    def orientation(self):
+        faceMatrix = self.mesh.face_matrix()
+        vertexMatrix = self.mesh.vertex_matrix()
+        
+        x = 0 
+        y = 1
+        z = 2
+
+        accummelator = [0,0,0]
+
+        for face in faceMatrix:
+            vertexA = vertexMatrix[face[0]]
+            vertexB = vertexMatrix[face[1]]
+            vertexC = vertexMatrix[face[2]]
+            baryCenterVertex = [(vertexA[x] + vertexB[x] + vertexC[x]) / 3, (vertexA[y] + vertexB[y] + vertexC[y]) / 3, (vertexA[z] + vertexB[z] + vertexC[z]) / 3]
+            
+            #see slide 21 Session 4
+            accummelator[x] += np.sign(baryCenterVertex[x]) * baryCenterVertex[x] ** 2
+            accummelator[y] += np.sign(baryCenterVertex[y]) * baryCenterVertex[y] ** 2
+            accummelator[z] += np.sign(baryCenterVertex[z]) * baryCenterVertex[z] ** 2
+
+        return accummelator
+
+    def flipMesh(self):
+        orientation = np.sign(self.orientation())
+        vertexMatrix = self.mesh.vertex_matrix()
+        x = 0 
+        y = 1
+        z = 2
+        for idx in range(len(vertexMatrix)):
+            vertexMatrix[idx] = [vertexMatrix[idx][x] * orientation[x], vertexMatrix[idx][y]*orientation[y], vertexMatrix[idx][z] * orientation[z]]
+        flippedMesh = pml.Mesh(vertex_matrix = vertexMatrix, face_matrix = self.mesh.face_matrix(), edge_matrix=self.mesh.edge_matrix())
+        self.setMesh(flippedMesh)
 
     def alignAxises(self):
         meshData = self.getAnalyzedData()
@@ -97,9 +131,7 @@ class Mesh:
             vertexMatrix[vIdx] = [np.dot(eigenVectors[0], vertexMatrix[vIdx]), np.dot(eigenVectors[1], vertexMatrix[vIdx]), np.dot(eigenVectors[2], vertexMatrix[vIdx])]
 
         rotatedMesh = pml.Mesh(vertex_matrix = vertexMatrix, face_matrix = facesMatrix, edge_matrix = edgesMatrix)
-        self.pymesh.clear()
-        self.pymesh.add_mesh(rotatedMesh)
-        self.mesh = self.pymesh.current_mesh()
+        self.setMesh(rotatedMesh)
 
     def centerBarycenters(self):
         translated = [ vertex - self.bary_data['barycenter'] for vertex in self.mesh.ver]
@@ -109,12 +141,10 @@ class Mesh:
         self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
         self.pymesh.apply_filter('meshing_remove_duplicate_faces')
         self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
-        self.mesh = self.pymesh.current_mesh()
 
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        print(self.pymesh.current_mesh().vertex_matrix())
         #Save the file in obj format
         if file_path==None:
             self.pymesh.save_current_mesh(file_path)
@@ -122,21 +152,37 @@ class Mesh:
             self.pymesh.save_current_mesh(file_path)
     
     def remesh(self):
+
         targetVertices = 10000
-        while(self.mesh.vertex_number() < targetVertices - 100):
+        stats = self.getAnalyzedData()
+        i = 0
+
+        #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(0.02), iterations=2)
+        
+        while(self.mesh.vertex_number() < targetVertices - 500 or self.mesh.vertex_number() > targetVertices - 500 and i < 5):
             if(self.mesh.vertex_number() < targetVertices - 100):
                 try:
+                    print("KANKERER")
                     self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
                 except:
+                    print("FD")
                     self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
                     self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
-            elif(self.mesh.vertex_numbers() > targetVertices - 100):
-                self.ms.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / self.mesh.vertex_number())
+            elif(self.mesh.vertex_number() > targetVertices - 100):
+                self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
+            stats = self.getAnalyzedData()
+            i += 1
 
-        if(self.mesh.vertex_number() - 100 > targetVertices):
-           self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / self.mesh.vertex_number())
+        if(self.mesh.vertex_number() > targetVertices):
+           self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
 
-        print(self.pymesh.current_mesh().vertex_number())
+        stats = self.getAnalyzedData()
+        try:
+            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
+        except:
+            print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+
+        print("DONE")
 
     def getPCA(self):
         vertexMat = self.mesh.vertex_matrix()
@@ -160,3 +206,8 @@ class Mesh:
                    eigenvalues[j] = temp
 
         return eigenvalues, [res[0],res[1],mathHelper.crossProduct(res[0],res[1])]
+    
+    def setMesh(self, mesh):
+        self.pymesh.clear()
+        self.pymesh.add_mesh(mesh)
+        self.mesh = self.pymesh.current_mesh()
