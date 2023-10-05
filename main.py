@@ -66,7 +66,7 @@ def main():
             if(sys.argv[2] == input.NORMALISE):
                 data = exportBasicData('normalised')
                 exporter = dataExporter('normalisedDBData.csv',data)
-
+        #FOR FEATURES, USE:                 python main.py features <path to mesh> 
         if(sys.argv[1] == input.FEATURE):
             if(sys.argv[2] == ''):
                 print("PUT VALID MESH PATH")
