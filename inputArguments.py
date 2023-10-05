@@ -6,6 +6,7 @@ FILE = 'file'
 NORMALISE = 'normalise'
 EXPORT = 'export'
 GRAPH = 'graph'
+FEATURE = 'feature'
 
 BASICDATA = 'basicdata'
 NORMALISED = 'normalised'

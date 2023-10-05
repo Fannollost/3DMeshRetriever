@@ -6,6 +6,7 @@ from renderer import Renderer
 import inputArguments as input
 from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB
 from histogram import Graph
+from featureExtractor import FeatureExtractor
 
 path = "db/"
 meshType = "Chess/"
@@ -65,6 +66,16 @@ def main():
             if(sys.argv[2] == input.NORMALISE):
                 data = exportBasicData('normalised')
                 exporter = dataExporter('normalisedDBData.csv',data)
+
+        if(sys.argv[1] == input.FEATURE):
+            if(sys.argv[2] == ''):
+                print("PUT VALID MESH PATH")
+
+            fEx = FeatureExtractor(sys.argv[2])
+            features = fEx.getFeatures()
+            print(features)
+            dataExporter('features.csv', features)
+
 
     if(sys.argv[1] == input.GRAPH):
         h = Graph()
