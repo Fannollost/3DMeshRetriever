@@ -17,6 +17,8 @@ targetVertices = 10000
 class Mesh:
     
     def __init__(self, meshPath):
+        # pml.print_pymeshlab_version()
+        print(meshPath)
         self.meshPath = meshPath
         self.pymesh = pml.MeshSet()   
         self.pymesh.load_new_mesh(meshPath)
@@ -48,13 +50,11 @@ class Mesh:
         
         if quads and triangles:
             print("We have a mix of triangles and quads")
-        if triangles and not(quads):
-            print("We only have triangles")
-        else:
+        if quads and not(triangles):
             print("We have quads only")
-        eigen_values, eigen_vectors = self.getPCA()
+        
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
-        analyzedData = { data.CLASS.value : classType, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
+        analyzedData = { data.CLASS.value : classType, data.FILE.value : self.fileName, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
                          data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox),
                          data.DISTANCE_ORIGIN.value : mathHelper.length(bary_data['barycenter']), data.EIGEN_VALUE.value : eigen_values, data.EIGEN_VECTORS.value : eigen_vectors }
         return analyzedData

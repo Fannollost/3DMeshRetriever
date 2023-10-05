@@ -1,46 +1,58 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import random
 import pandas as pd
-from collections import Counter
 
 # Parameters
 N = 100
 no_bins = int(round(np.sqrt(N)))  # Recommended number of bins
-# no_bins = <TRY_A_DIFFERENT_SETTING>
-#print("Number of bins: ", no_bins)
 
-# Generate random sample data
-#data = np.array([random.randint(0, no_bins) for _ in range(N)])
+class Graph():
+    def getHisto(self, csv, data, title):
+        df = pd.read_csv(csv)
+        db_data = df[data]
 
-df = pd.read_csv('basicdata.csv')
-data = df['Amount of Faces']
+        # Compute histogram
+        counts, bins = np.histogram(db_data, bins=no_bins)
 
-# Compute histogram
-counts, bins = np.histogram(data, bins=no_bins)
+        # Plot histogram
+        fig, ax = plt.subplots()
+        ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
+        #ax.hist(bins[:-1], weights=counts, range=[0, 12000])
+        ax.set_title(title)
+        ax.set_ylabel("Number of samples per bin")
+        ax.set_xlabel(data)
 
-# Plot histogram
-fig, ax = plt.subplots()
-ax.hist(bins[:-1], bins, weights=counts)
-ax.set_title("Faces of basic data")
-ax.set_ylabel("Number of samples per bin")
-ax.set_xlabel("Amount of Faces")
+    def getBar(self, csv, data, title):
+        df = pd.read_csv(csv)
 
-data = df['Amount of Vertices']
-counts, bins = np.histogram(data, bins=no_bins)
+        fig, ax = plt.subplots()
+        ax.set_title(title)
+        ax.set_ylabel("Number of samples per bin")
+        ax.set_xlabel(data)
+        data = df[data].value_counts().plot(kind='bar')
 
-# Plot histogram
-fig2, ax = plt.subplots()
-ax.hist(bins[:-1], bins, weights=counts)
-ax.set_title("Vertices of basic data")
-ax.set_ylabel("Number of samples per bin")
-ax.set_xlabel("Amount of Vertices")
+    def getBoxplot(self, data, title):
+        df1 = pd.read_csv('basicdata.csv')
+        data_1 = df1[data]
+        df2 = pd.read_csv('normalisedDBData.csv')
+        data_2 = df2[data]
+        data = [data_1, data_2]
 
-# Plot bar
-fig3, ax = plt.subplots()
-ax.set_title("Classes of basic data")
-ax.set_ylabel("Number of samples per bin")
-ax.set_xlabel("Classes")
-data = df['Class'].value_counts().plot(kind='bar')
+        fig, ax = plt.subplots()
+        ax.set_title(title)
+        
+        bp = ax.boxplot(data)
 
-plt.show()
+    def getlinePlot(self, data, title):
+        df1 = pd.read_csv('basicdata.csv')
+        data_1 = df1[data]
+        df2 = pd.read_csv('normalisedDBData.csv')
+        data_2 = df2[data]
+        #plt.plot(data_1)
+        plt.plot(data_1, label=title)
+        plt.xlabel("Model nr.")
+        plt.ylabel("Value of data")
+        plt.legend(loc="best")
+
+    def showPlots(self):
+        plt.show()
