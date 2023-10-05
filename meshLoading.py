@@ -59,9 +59,6 @@ class Mesh:
                          data.DISTANCE_ORIGIN.value : mathHelper.length(bary_data['barycenter']), data.EIGEN_VALUE.value : eigen_values, data.EIGEN_VECTORS.value : eigen_vectors }
         return analyzedData
 
-    def getBoundingBox(self):
-        return [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
-
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
@@ -145,21 +142,24 @@ class Mesh:
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        #Save the file in obj format
-        if file_path==None:
-            self.pymesh.save_current_mesh(file_path)
-        else:
-            self.pymesh.save_current_mesh(file_path)
+        self.pymesh.save_current_mesh(file_path, save_face_color=False)
+        with open (file_path, 'r') as infile:
+            lines = infile.readlines()
+
+        processed =[]
+        for line in lines:
+            column = line.split()
+            chopped = column[:4] + column[7:]
+            modified = ' '.join(chopped) + '\n'
+            processed.append(modified)
+        infile.close()
+
+        with open(file_path, 'w') as outfile:
+            outfile.writelines(processed)
     
     def remesh(self):
-
-        targetVertices = 10000
-        stats = self.getAnalyzedData()
-        i = 0
-
-        #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(0.02), iterations=2)
-        
-        while(self.mesh.vertex_number() < targetVertices - 500 or self.mesh.vertex_number() > targetVertices - 500 and i < 5):
+        self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=5)
+        """while(self.mesh.vertex_number() < targetVertices - 500 or self.mesh.vertex_number() > targetVertices - 500 and i < 5):
             if(self.mesh.vertex_number() < targetVertices - 100):
                 try:
                     print("KANKERER")
@@ -178,11 +178,11 @@ class Mesh:
 
         stats = self.getAnalyzedData()
         try:
-            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
+            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
         except:
             print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
-
-        print("DONE")
+        """
+        print(self.mesh.vertex_number())
 
     def getPCA(self):
         vertexMat = self.mesh.vertex_matrix()

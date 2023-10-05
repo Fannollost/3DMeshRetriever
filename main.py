@@ -51,6 +51,6 @@ def main():
                 data = exportBasicData(sys.argv[3])
                 exporter = dataExporter('basicdata.csv',data)
             
-            
+        
 
 main()
