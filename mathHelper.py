@@ -22,3 +22,12 @@ def areaTriangle(a, b, c):
 
 def vector(v1, v2):
     return [v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]]
+
+def angleBetween(vect1, vect2):
+    x = np.dot(vect1,vect2) / (length(vect1) * length(vect2))
+    if x < -1 : x = -1
+    if x > 1 : x = 1
+    return np.arccos(x)
+
+def volumeTetrahydron(vect1, vect2, vect3):
+    return np.dot(np.cross(vect1,vect2), vect3) / 6

@@ -48,10 +48,13 @@ class Mesh:
             if len(face) == 3:
                 triangles = True
         
+        if triangles and not(quads):
+            print("We only have triangles")
         if quads and triangles:
             print("We have a mix of triangles and quads")
         if quads and not(triangles):
             print("We have quads only")
+        eigen_values, eigen_vectors = self.getPCA()
         
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
         analyzedData = { data.CLASS.value : classType, data.FILE.value : self.fileName, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),

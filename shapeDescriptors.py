@@ -1,4 +1,6 @@
 from enum import Enum
+from math import pi
+import numpy as np
 
 class globalShapeDescriptorTypes(Enum):
     SURFACE_AREA = "Surface Area"
@@ -20,4 +22,6 @@ class propertyDescriptorTypes(Enum):
     D2 = "D2"
     D3 = "D3"
     D4 = "D4"
+
+histogramLimits =  { propertyDescriptorTypes.A3.value : pi, propertyDescriptorTypes.D1.value : np.sqrt(3) / 2, propertyDescriptorTypes.D2.value : np.sqrt(3), propertyDescriptorTypes.D3.value : np.sqrt(3/4) }
 
