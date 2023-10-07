@@ -35,11 +35,11 @@ class FeatureExtractor:
         D3 = "D3"
         D4 = "D4"
 
-        A3 = self.getA3()
-        D1 = self.getD1()
-        D2 = self.getD2()
-        D3 = self.getD3()
-        D4 = self.getD4()
+        A3 = self.getA3(samples)
+        D1 = self.getD1(samples)
+        D2 = self.getD2(samples)
+        D3 = self.getD3(samples)
+        D4 = self.getD4(samples)
         return features
 
     def getA3(self, samples):
