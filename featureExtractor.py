@@ -35,15 +35,15 @@ class FeatureExtractor:
         D3 = "D3"
         D4 = "D4"
 
-        A3 = self.getA3(samples)
-        D1 = self.getD1(samples)
-        D2 = self.getD2(samples)
-        D3 = self.getD3(samples)
-        D4 = self.getD4(samples)
+        #A3 = self.getA3(samples)
+        #D1 = self.getD1(samples)
+        #D2 = self.getD2(samples)
+        #D3 = self.getD3(samples)
+        #D4 = self.getD4(samples)
         return features
 
     def getA3(self, samples):
-        vertices = self.pymesh.vertex_matrix()
+        vertices = self.mesh.vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randomint(0,len(vertices) - 1)
@@ -63,7 +63,7 @@ class FeatureExtractor:
         return self.normalise(yAxis, binEdges)
     
     def getD1(self, samples):
-        vertices = self.pymesh.vertex_matrix()
+        vertices = self.mesh.vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randomint(0, len(vertices) - 1)
@@ -73,7 +73,7 @@ class FeatureExtractor:
         return self.normalise(yAxis,binEdges)
     
     def getD2(self,samples):
-        vertices = self.pymesh.vertex_matrix()
+        vertices = self.mesh.vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randomint(0,len(vertices) - 1)
@@ -87,7 +87,7 @@ class FeatureExtractor:
         return self.normalise(yAxis,binEdges)
 
     def getD3(self,samples): 
-        vertices = self.pymesh.vertex_matrix()
+        vertices = self.mesh.vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randomint(0,len(vertices) - 1)
@@ -106,7 +106,7 @@ class FeatureExtractor:
         return self.normalise(yAxis, binEdges)
     
     def getD4(self, samples):
-        vertices = self.pymesh.vertex_matrix()
+        vertices = self.mesh.vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randomint(0,len(vertices) - 1)
