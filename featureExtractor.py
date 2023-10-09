@@ -19,7 +19,7 @@ class FeatureExtractor:
 
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
-                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
+                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness()
                      globalDescriptors.DIAMETER.value : self.getDiameter()}   
         samples = 100000
         #SURFACE_AREA = "Surface Area"
@@ -41,10 +41,8 @@ class FeatureExtractor:
         print("done with D1")
         D2 = self.getD2(int(samples ** (1/2))+ 1)
         print("done with D2")
-
         D3 = self.getD3(int(samples ** (1/3))+ 1)
         print("done with D3")
-
         D4 = self.getD4(int(samples ** (1/4))+ 1)
         print("done with D4")
 
@@ -144,7 +142,7 @@ class FeatureExtractor:
                         volume = volumeTetrahydron(vector(vertex0,vertex1), vector(vertex0,vertex2), vector(vertex0,vertex3))
                         allSamples.append(volume)
         yAxis, binEdges = np.histogram(allSamples, range=(0, histogramLimits[propertyDescriptors.D4.value]), bins = 8)
-        self.normalise(yAxis, binEdges)
+        return self.normalise(yAxis, binEdges)
 
     def normalise(self, yAxis, binEdges):
         x = (binEdges[1:] + binEdges[:-1]) / 2

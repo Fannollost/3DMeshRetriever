@@ -23,5 +23,5 @@ class propertyDescriptorTypes(Enum):
     D3 = "D3"
     D4 = "D4"
 
-histogramLimits =  { propertyDescriptorTypes.A3.value : pi, propertyDescriptorTypes.D1.value : np.sqrt(3) / 2, propertyDescriptorTypes.D2.value : np.sqrt(3), propertyDescriptorTypes.D3.value : np.sqrt(3/4) }
+histogramLimits =  { propertyDescriptorTypes.A3.value : pi, propertyDescriptorTypes.D1.value : np.sqrt(3) / 2, propertyDescriptorTypes.D2.value : np.sqrt(3), propertyDescriptorTypes.D3.value : np.sqrt(3/4) , propertyDescriptorTypes.D4.value:(1/6)**(1/3)}
 
