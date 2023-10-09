@@ -4,9 +4,8 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures
 from histogram import Graph
-from featureExtractor import FeatureExtractor
 
 path = "db/"
 meshType = "Chess/"
@@ -68,11 +67,11 @@ def main():
                 exporter = dataExporter('normalisedDBData.csv',data)
         #FOR FEATURES, USE:                 python main.py features <path to mesh> 
         if(sys.argv[1] == input.FEATURE):
-            if(sys.argv[2] == ''):
-                print("PUT VALID MESH PATH")
-
-            fEx = FeatureExtractor(sys.argv[2])
-            features = fEx.getFeatures()
+            features = []
+            if(sys.argv[2] == 'all'):
+                features = getAllFeatures()
+            elif(sys.argv[2] != ''):
+                features = getFolderFeatures(sys.argv[2])
             print(features)
             dataExporter('features.csv', features)
 

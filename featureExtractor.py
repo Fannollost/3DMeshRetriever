@@ -8,6 +8,7 @@ import meshplex
 from math import pi
 import random
 from scipy.spatial import ConvexHull, distance
+from itertools import combinations
 
 class FeatureExtractor:
     def __init__(self, meshpath):
@@ -19,8 +20,8 @@ class FeatureExtractor:
 
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
-                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
-                     globalDescriptors.DIAMETER.value : self.getDiameter()}   
+                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness()}
+                     #globalDescriptors.DIAMETER.value : self.getDiameter()}   
         samples = 100000
         #SURFACE_AREA = "Surface Area"
         #VOLUME = "Volume"
@@ -140,6 +141,7 @@ class FeatureExtractor:
                         vertex3 = vertices[ldx]
                         if ldx == kdx or ldx == jdx or ldx == idx: continue
                         volume = volumeTetrahydron(vector(vertex0,vertex1), vector(vertex0,vertex2), vector(vertex0,vertex3))
+                        print(volume)
                         allSamples.append(volume)
         yAxis, binEdges = np.histogram(allSamples, range=(0, histogramLimits[propertyDescriptors.D4.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
@@ -166,7 +168,16 @@ class FeatureExtractor:
         return totArea
     
     def getDiameter(self):
-        
+        vertices = self.mesh.vertex_matrix()
+        current_max = 0 
+        i = 0
+        for a, b in combinations(np.array(vertices), 2):
+            print(i)
+            i +=1
+            current_distance = np.linalg.norm(a-b)
+            if current_distance > current_max:
+                current_max = current_distance
+        return current_max
     def getOBBVolume(self):
         minSize = self.mesh.bounding_box().min()
         maxSize = self.mesh.bounding_box().max()

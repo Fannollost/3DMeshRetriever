@@ -3,6 +3,7 @@ import csv
 from meshLoading import Mesh
 from meshDataTypes import dataTypes
 import pandas as pd
+from featureExtractor import FeatureExtractor
 
 class dataExporter:
 
@@ -30,6 +31,24 @@ def exportBasicData(normalised):
             alldata.append(data)             
             
     return alldata
+
+
+def getFolderFeatures(folderName):
+    files = get_all_files('normalisedDB/' + folderName + '/')
+    folderData = []
+    for file in files:
+        fEx = FeatureExtractor('normalisedDB/' + folderName + '/' + file)
+        features = fEx.getFeatures()
+        folderData.append(features)
+    return folderData
+
+def getAllFeatures():
+    directories = get_immediate_subdirectories('normaliseddb/')
+    DBfeatures = []
+    for dir in directories:
+        folderData = getFolderFeatures()
+        DBfeatures.append(folderData)
+    return DBfeatures
 
 def normalizeDB():
     directories = get_immediate_subdirectories('db/')
