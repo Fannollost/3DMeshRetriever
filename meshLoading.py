@@ -11,8 +11,9 @@ import mathHelper
 from helper import getEveryElementFromEveryList
 
 
-target_edge_length = 0.02
+
 targetVertices = 10000
+target_edge_length = 0.03
 
 class Mesh:
     
@@ -161,9 +162,10 @@ class Mesh:
             outfile.writelines(processed)
     
     def remesh(self):
-        self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=5)
-        """while(self.mesh.vertex_number() < targetVertices - 500 or self.mesh.vertex_number() > targetVertices - 500 and i < 5):
-            if(self.mesh.vertex_number() < targetVertices - 100):
+        i = 0
+        stats = self.getAnalyzedData()
+        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 or stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000 and i < 5):
+            if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
                 try:
                     print("KANKERER")
                     self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
@@ -171,20 +173,25 @@ class Mesh:
                     print("FD")
                     self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
                     self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
-            elif(self.mesh.vertex_number() > targetVertices - 100):
+
+            elif(stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000):
                 self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
+
             stats = self.getAnalyzedData()
             i += 1
+            print(i)
 
-        if(self.mesh.vertex_number() > targetVertices):
+        if(stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000):
            self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
+
+        self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.Percentage(1), iterations=1)
 
         stats = self.getAnalyzedData()
         try:
             self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
         except:
             print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
-        """
+        
         print(self.mesh.vertex_number())
 
     def getPCA(self):
