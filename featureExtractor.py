@@ -21,7 +21,7 @@ class FeatureExtractor:
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
                      globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
                      globalDescriptors.DIAMETER.value : self.getDiameter()}   
-        samples = 100
+        samples = 100000
         #SURFACE_AREA = "Surface Area"
         #VOLUME = "Volume"
         #COMPACTNESS = "Compactness"
@@ -35,19 +35,29 @@ class FeatureExtractor:
        # D3 = "D3"
        # D4 = "D4"
 
-        A3 = self.getA3(samples)
+        A3 = self.getA3(int(samples ** (1/3))+ 1) 
         print("done with A3")
         D1 = self.getD1(samples)
         print("done with D1")
-        D2 = self.getD2(samples)
+        D2 = self.getD2(int(samples ** (1/2))+ 1)
         print("done with D2")
 
-        D3 = self.getD3(samples)
+        D3 = self.getD3(int(samples ** (1/3))+ 1)
         print("done with D3")
 
-        D4 = self.getD4(samples)
+        D4 = self.getD4(int(samples ** (1/4))+ 1)
         print("done with D4")
 
+        for i in range(len(A3[0])):
+            features["A3_"+str(i)] = A3[1][i]
+        for i in range(len(D1[0])):
+            features["D1_"+str(i)] = D1[1][i]
+        for i in range(len(D2[0])):
+            features["D2_"+str(i)] = D2[1][i]
+        for i in range(len(D3[0])):
+            features["D3_"+str(i)] = D3[1][i]
+        for i in range(len(D4[0])):
+            features["D4_" + str(i)] = D4[1][i]
         return features
 
     def getA3(self, samples):
@@ -63,7 +73,7 @@ class FeatureExtractor:
                     continue
                 for k in range(samples):
                     kdx = random.randint(0,len(vertices) - 1)
-                    vertex2 = vertices[kdx]
+                    vertex2 = vertices[kdx]  
                     if kdx == jdx or kdx == jdx: continue
                     allSamples.append(angleBetween(vector(vertex0,vertex1), vector(vertex0,vertex2)))
 
