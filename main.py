@@ -65,7 +65,8 @@ def main():
             if(sys.argv[2] == input.NORMALISE):
                 data = exportBasicData('normalised')
                 exporter = dataExporter('normalisedDBData.csv',data)
-        #FOR FEATURES, USE:                 python main.py features <path to mesh> 
+        #FOR FEATURES, USE:                 python main.py features <folder> 
+        #FOR ALL FEATURES, USE:             python main.py features <all>
         if(sys.argv[1] == input.FEATURE):
             features = []
             if(sys.argv[2] == 'all'):
