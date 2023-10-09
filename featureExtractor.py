@@ -19,7 +19,7 @@ class FeatureExtractor:
 
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
-                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness()
+                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
                      globalDescriptors.DIAMETER.value : self.getDiameter()}   
         samples = 100000
         #SURFACE_AREA = "Surface Area"
@@ -166,16 +166,7 @@ class FeatureExtractor:
         return totArea
     
     def getDiameter(self):
-        self.pymesh.generate_convex_hull()
-        vertexMatrix = self.mesh.vertex_matrix()
-        dia = 0
-        for i in vertexMatrix:
-            for j in vertexMatrix:
-                distance = dist(i,j)
-                if distance > dia:
-                    dia = distance
-        return dia
-
+        
     def getOBBVolume(self):
         minSize = self.mesh.bounding_box().min()
         maxSize = self.mesh.bounding_box().max()
