@@ -10,6 +10,7 @@ import random
 from scipy.spatial import ConvexHull, distance
 import scipy
 from itertools import combinations
+from helper import getEveryElementFromEveryList
 
 SapeProperties = True
 
@@ -24,7 +25,7 @@ class FeatureExtractor:
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
                      globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
-                     globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull()
+                     globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull(), globalDescriptors.ECCENTRICITY.value : self.getEccentric()
                      }
                      #globalDescriptors.DIAMETER.value : self.getDiameter()}   
         samples = 100000
@@ -215,9 +216,14 @@ class FeatureExtractor:
     def getEccentric(self):
         vertices = self.mesh.vertex_matrix()
         print("start Cov")
-        cov = np.cov(vertices)
+        V = np.zeros((3, len(vertices)))
+        V[0] = getEveryElementFromEveryList(0, vertices)
+        V[1] = getEveryElementFromEveryList(1, vertices)
+        V[2] = getEveryElementFromEveryList(2, vertices)
+
+        cov = np.cov(V)
         print("Computing Eigenvalues")
-        eig, vec = scipy.linalg.eig(cov)
+        eig, vec = np.linalg.eig(cov)
         print(eig)
         print(np.max(eig))
         print(np.min(eig))
