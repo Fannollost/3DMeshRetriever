@@ -25,9 +25,9 @@ class FeatureExtractor:
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
                      globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
-                     globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull(), globalDescriptors.ECCENTRICITY.value : self.getEccentric()
-                     }
-                     #globalDescriptors.DIAMETER.value : self.getDiameter()}   
+                     globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull(), globalDescriptors.ECCENTRICITY.value : self.getEccentric(),
+                     globalDescriptors.DIAMETER.value : self.getDiameter()} 
+                       
         samples = 100000
 
         ## TODO 
@@ -177,16 +177,18 @@ class FeatureExtractor:
         return totArea
     
     def getDiameter(self):
-        vertices = self.mesh.vertex_matrix()
-        current_max = 0 
-        i = 0
-        for a, b in combinations(np.array(vertices), 2):
-            #print(i)
-            i +=1
-            current_distance = np.linalg.norm(a-b)
-            if current_distance > current_max:
-                current_max = current_distance
-        return current_max
+        self.pymesh.generate_convex_hull()
+        vertexMat = self.pymesh.current_mesh().vertex_matrix()
+        diameter = 0
+        for u in vertexMat:
+            for v in vertexMat:
+                dia = dist(u,v)
+                if dia > diameter:
+                    diameter = dia
+        self.pymesh.set_current_mesh(0)
+        return diameter
+    
+
     def getOBBVolume(self):
         minSize = self.mesh.bounding_box().min()
         maxSize = self.mesh.bounding_box().max()
@@ -215,18 +217,13 @@ class FeatureExtractor:
     
     def getEccentric(self):
         vertices = self.mesh.vertex_matrix()
-        print("start Cov")
         V = np.zeros((3, len(vertices)))
         V[0] = getEveryElementFromEveryList(0, vertices)
         V[1] = getEveryElementFromEveryList(1, vertices)
         V[2] = getEveryElementFromEveryList(2, vertices)
 
         cov = np.cov(V)
-        print("Computing Eigenvalues")
         eig, vec = np.linalg.eig(cov)
-        print(eig)
-        print(np.max(eig))
-        print(np.min(eig))
         return abs(np.max(eig)) / abs(np.min(eig))
         # vertices = self.mesh.vertex_matrix()
         # bary = np.mean(vertices, axis=0)
