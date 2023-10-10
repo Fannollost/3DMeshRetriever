@@ -8,7 +8,10 @@ import meshplex
 from math import pi
 import random
 from scipy.spatial import ConvexHull, distance
+import scipy
 from itertools import combinations
+
+SapeProperties = True
 
 class FeatureExtractor:
     def __init__(self, meshpath):
@@ -20,43 +23,48 @@ class FeatureExtractor:
 
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
-                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness()}
+                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
+                     globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull()
+                     }
                      #globalDescriptors.DIAMETER.value : self.getDiameter()}   
         samples = 100000
+
+        ## TODO 
         #SURFACE_AREA = "Surface Area"
         #VOLUME = "Volume"
         #COMPACTNESS = "Compactness"
         #RECTANGULARITY = "Rectangularity"
         #DIAMETER = "Diameter"
-        CONVEXITY = "Convexity"
+        #CONVEXITY = "Convexity"
         ECCENTRICITY = "Eccentricity"
-        #A3 = "A3"
-       # D1 = "D1"
-       # D2 = "D2"
-       # D3 = "D3"
-       # D4 = "D4"
+        # A3 = "A3"
+        # D1 = "D1"
+        # D2 = "D2"
+        # D3 = "D3"
+        # D4 = "D4"
 
-        A3 = self.getA3(int(samples ** (1/3))+ 1) 
-        print("done with A3")
-        D1 = self.getD1(samples)
-        print("done with D1")
-        D2 = self.getD2(int(samples ** (1/2))+ 1)
-        print("done with D2")
-        D3 = self.getD3(int(samples ** (1/3))+ 1)
-        print("done with D3")
-        D4 = self.getD4(int(samples ** (1/4))+ 1)
-        print("done with D4")
+        if SapeProperties:
+            A3 = self.getA3(int(samples ** (1/3))+ 1) 
+            print("done with A3")
+            D1 = self.getD1(samples)
+            print("done with D1")
+            D2 = self.getD2(int(samples ** (1/2))+ 1)
+            print("done with D2")
+            D3 = self.getD3(int(samples ** (1/3))+ 1)
+            print("done with D3")
+            D4 = self.getD4(int(samples ** (1/4))+ 1)
+            print("done with D4")
 
-        for i in range(len(A3[0])):
-            features["A3_"+str(i)] = A3[1][i]
-        for i in range(len(D1[0])):
-            features["D1_"+str(i)] = D1[1][i]
-        for i in range(len(D2[0])):
-            features["D2_"+str(i)] = D2[1][i]
-        for i in range(len(D3[0])):
-            features["D3_"+str(i)] = D3[1][i]
-        for i in range(len(D4[0])):
-            features["D4_" + str(i)] = D4[1][i]
+            for i in range(len(A3[0])):
+                features["A3_"+str(i)] = A3[1][i]
+            for i in range(len(D1[0])):
+                features["D1_"+str(i)] = D1[1][i]
+            for i in range(len(D2[0])):
+                features["D2_"+str(i)] = D2[1][i]
+            for i in range(len(D3[0])):
+                features["D3_"+str(i)] = D3[1][i]
+            for i in range(len(D4[0])):
+                features["D4_" + str(i)] = D4[1][i]
         return features
 
     def getA3(self, samples):
@@ -141,7 +149,7 @@ class FeatureExtractor:
                         vertex3 = vertices[ldx]
                         if ldx == kdx or ldx == jdx or ldx == idx: continue
                         volume = volumeTetrahydron(vector(vertex0,vertex1), vector(vertex0,vertex2), vector(vertex0,vertex3))
-                        print(volume)
+                        #print(volume)
                         allSamples.append(volume)
         yAxis, binEdges = np.histogram(allSamples, range=(0, histogramLimits[propertyDescriptors.D4.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
@@ -172,7 +180,7 @@ class FeatureExtractor:
         current_max = 0 
         i = 0
         for a, b in combinations(np.array(vertices), 2):
-            print(i)
+            #print(i)
             i +=1
             current_distance = np.linalg.norm(a-b)
             if current_distance > current_max:
@@ -197,4 +205,29 @@ class FeatureExtractor:
 
 
         volume = np.abs(volume)
-        return volume
+        return volume#
+    
+    def getConvexHull(self):
+        vertices = self.mesh.vertex_matrix()
+        hull = ConvexHull(vertices)
+        return hull.volume
+    
+    def getEccentric(self):
+        vertices = self.mesh.vertex_matrix()
+        print("start Cov")
+        cov = np.cov(vertices)
+        print("Computing Eigenvalues")
+        eig, vec = scipy.linalg.eig(cov)
+        print(eig)
+        print(np.max(eig))
+        print(np.min(eig))
+        return abs(np.max(eig)) / abs(np.min(eig))
+        # vertices = self.mesh.vertex_matrix()
+        # bary = np.mean(vertices, axis=0)
+        # vertices -= bary
+        # print("start Cov")
+        # cov = np.cov(vertices)
+        # print("start eig")
+        # eigenval, eigenvec = np.linalg.eig(cov)
+        # print(eigenval)
+        # return abs(np.max(eigenval)) / abs(np.min(eigenval))

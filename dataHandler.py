@@ -38,8 +38,10 @@ def getFolderFeatures(folderName):
     folderData = []
     for file in files:
         fEx = FeatureExtractor('normalisedDB/' + folderName + '/' + file)
+        data = {dataTypes.CLASS.value : folderName, dataTypes.FILE.value : file}
         features = fEx.getFeatures()
-        folderData.append(features)
+        data.update(features)
+        folderData.append(data)
     return folderData
 
 def getAllFeatures():
