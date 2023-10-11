@@ -13,7 +13,7 @@ from helper import getEveryElementFromEveryList
 
 
 targetVertices = 10000
-target_edge_length = 0.03
+target_edge_length = 0.01
 
 class Mesh:
     
@@ -164,7 +164,14 @@ class Mesh:
     def remesh(self):
         i = 0
         stats = self.getAnalyzedData()
-        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 or stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000 and i < 5):
+
+        while((stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 or stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000) and i < 3):
+            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
+            i+=1
+            stats=self.getAnalyzedData()
+        """"self.pymesh.generate_iso_parametrization_remeshing(samplingrate=2)
+
+        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 5):
             if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
                 try:
                     print("KANKERER")
@@ -174,18 +181,16 @@ class Mesh:
                     self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
                     self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
 
-            elif(stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000):
+            elif(stats[data.AMOUNT_VERTICES.value] > targetVertices + 1000):
                 self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
 
             stats = self.getAnalyzedData()
             i += 1
             print(i)
 
-        if(stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000):
+        if(stats[data.AMOUNT_VERTICES.value] > targetVertices):
            self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
-
-        self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.Percentage(1), iterations=1)
-
+        """
         stats = self.getAnalyzedData()
         try:
             self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
