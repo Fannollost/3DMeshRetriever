@@ -4,7 +4,6 @@ from shapeDescriptors import globalShapeDescriptorTypes as globalDescriptors
 from shapeDescriptors import propertyDescriptorTypes as propertyDescriptors
 from shapeDescriptors import histogramLimits
 import numpy as np
-import meshplex
 from math import pi
 import random
 from scipy.spatial import ConvexHull, distance
