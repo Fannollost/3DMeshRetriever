@@ -4,9 +4,9 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getDistances
 from histogram import Graph
-
+import paths
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -55,7 +55,7 @@ def main():
                 dataExporter('normalisedData.csv', folderData)
             else:
                 dbData = normalizeDB()
-                dataExporter('normalisedDBData.csv', dbData)
+                dataExporter(paths.normalisedDBCSV, dbData)
         # TO EXPORT DATA, USE:              python main.py export basicdata
         # TO EXPORT NORMALISED DATA, USE:   python main.py export basicdata normalised
         if(sys.argv[1] == input.EXPORT):
@@ -64,7 +64,7 @@ def main():
                 exporter = dataExporter('basicdata.csv',data)
             if(sys.argv[2] == input.NORMALISE):
                 data = exportBasicData('normalised')
-                exporter = dataExporter('normalisedDBData.csv',data)
+                exporter = dataExporter(paths.normalisedDBCSV,data)
         #FOR FEATURES, USE:                 python main.py features <folder> 
         #FOR ALL FEATURES, USE:             python main.py features <all>
         if(sys.argv[1] == input.FEATURE):
@@ -74,23 +74,25 @@ def main():
             elif(sys.argv[2] != ''):
                 features = getFolderFeatures(sys.argv[2])
             print(features)
-            dataExporter('features.csv', features)
+            dataExporter(paths.featuresCSV, features)
            
         if(sys.argv[1] == input.QUERY):
-            normaliseFeatures('features.csv', 'featuresnormalised.csv')
-            
+            normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
 
+        if(sys.argv[1] == input.DISTANCE):
+            normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+            getDistances()
 
     if(sys.argv[1] == input.GRAPH):
         h = Graph()
         #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
-        # h.getHisto('normalisedDBData.csv','Barycenter distance to origin', 'normalised data')
+        # h.getHisto(paths.normalisedDBCSV,'Barycenter distance to origin', 'normalised data')
         #h.getBoxplot('Barycenter distance to origin', 'Barycenter distance')
         #h.getHisto('basicdata.csv', 'Amount of Vertices', 'Amount of Vertices')
         #h.getHisto('basicdata.csv', 'Amount of Faces', 'Amount of Faces')
         #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
-        #h.getHisto('normalisedDBData.csv', 'Amount of Vertices', 'Amount of Vertices')
-        #h.getHisto('normalisedDBData.csv', 'Amount of Faces', 'Amount of Faces')
+        #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
+        #h.getHisto(paths.normalisedDBCSV, 'Amount of Faces', 'Amount of Faces')
         h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
         #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
         
