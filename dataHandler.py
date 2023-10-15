@@ -4,6 +4,9 @@ from meshLoading import Mesh
 from meshDataTypes import dataTypes
 import pandas as pd
 from featureExtractor import FeatureExtractor
+from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+
 
 class dataExporter:
 
@@ -15,6 +18,15 @@ class dataExporter:
         for d in range(len(data)):
             self.writer.writerow(data[d].values())
 
+def normaliseFeatures(featuresfile, toSave):
+    df = pd.read_csv(featuresfile)
+    scaler = MinMaxScaler()
+
+    for column in df.columns[2:]:
+        if df[column].dtype in [int, float]:
+            df[column] = scaler.fit_transform(df[[column]])
+
+    df.to_csv(toSave, index=False)
 
 def exportBasicData(normalised):
     if(normalised == 'normalised'):

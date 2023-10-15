@@ -7,6 +7,6 @@ NORMALISE = 'normalise'
 EXPORT = 'export'
 GRAPH = 'graph'
 FEATURE = 'feature'
-
+QUERY = 'query'
 BASICDATA = 'basicdata'
 NORMALISED = 'normalised'

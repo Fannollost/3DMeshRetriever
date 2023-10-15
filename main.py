@@ -4,7 +4,7 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures
 from histogram import Graph
 
 path = "db/"
@@ -75,6 +75,10 @@ def main():
                 features = getFolderFeatures(sys.argv[2])
             print(features)
             dataExporter('features.csv', features)
+           
+        if(sys.argv[1] == input.QUERY):
+            normaliseFeatures('features.csv', 'featuresnormalised.csv')
+            
 
 
     if(sys.argv[1] == input.GRAPH):
