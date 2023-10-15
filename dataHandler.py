@@ -20,11 +20,16 @@ class dataExporter:
 
 def normaliseFeatures(featuresfile, toSave):
     df = pd.read_csv(featuresfile)
+
     scaler = MinMaxScaler()
 
-    for column in df.columns[2:]:
-        if df[column].dtype in [int, float]:
-            df[column] = scaler.fit_transform(df[[column]])
+    group_size = 8
+    column_groups = [df.columns[-40 + i:-40 + i + group_size] for i in range(0, 40, group_size)]
+
+    for group in column_groups:
+        for column in group:
+            if df[column].dtype in [int, float]:
+                df[column] = scaler.fit_transform(df[[column]])
 
     df.to_csv(toSave, index=False)
 
