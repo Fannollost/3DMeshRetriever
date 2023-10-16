@@ -4,7 +4,7 @@ import sys
 from meshLoading import Mesh
 from renderer import Renderer
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getDistances
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh
 from histogram import Graph
 import paths
 path = "db/"
@@ -74,7 +74,6 @@ def Export(meshPath):
 #FOR ALL FEATURES, USE:             python main.py features <database> <all>
 #------------------------------------------------------------------------------------
 def Feature(folder):
-    
     features = []
     if(folder == 'all'):
         features = getAllFeatures()
@@ -84,17 +83,17 @@ def Feature(folder):
     dataExporter(paths.featuresCSV, features)
 
 #------------------------------------------------------------------------------------
-#FOR NORMALISE FEATURES USE:        python main.py query
+#FOR NORMALISE FEATURES USE:        python main.py query <folder> <object>  
 #------------------------------------------------------------------------------------
-def NormaliseFeatures():
-    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+def QueryMesh(folder, mesh):
+    getDistanceToMesh(folder, mesh)
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
 #------------------------------------------------------------------------------------
 def DistanceMatrix():
     normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
-    getDistances()
+    getAllDistances()
 
 
 #------------------------------------------------------------------------------------
@@ -120,15 +119,11 @@ def Graph():
 
 def main():
     args = sys.argv
-
-    #FOR NORMALISE FEATURES USE:        python main.py query
-    if(sys.argv[1] == input.QUERY):
-        NormaliseFeatures()
     
     #FOR DISTANCE MATRIX USE:           python main.py distance
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()
-        
+
     if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5):
         # TO RENDER, USE:                   python main.py render path_file
         if(sys.argv[1] == input.RENDER):
@@ -157,6 +152,10 @@ def main():
         if(sys.argv[1] == input.RENDER and sys.argv[4] == 'wireframe'):
             r = Renderer()
             r.renderWireFrame(sys.argv[3])
+
+        #FOR NORMALISE FEATURES USE:        python main.py query
+        if(sys.argv[1] == input.QUERY):
+            QueryMesh(sys.argv[2], sys.argv[3])
 
     if(sys.argv[1] == input.GRAPH):
         Graph()

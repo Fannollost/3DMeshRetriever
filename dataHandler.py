@@ -6,7 +6,7 @@ import pandas as pd
 from featureExtractor import FeatureExtractor
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from distance import get_cosine_distance
+from distance import get_cosine_distance, get_euclidean_distance
 import paths
 from helper import flatten_list, get_all_files, get_immediate_subdirectories
 
@@ -36,21 +36,40 @@ def normaliseFeatures(featuresfile, toSave):
 
 def getAllDistances():
     DB = getFeatures()
-    res = []
-    i = 0
     
     distances = []
     for a in range(len(DB)):
-        for b in range(i + 1,len(DB)):
+        for b in range(a + 1,len(DB)):
             obj_a = DB[a]
             obj_b = DB[b]
-            distance = get_cosine_distance(obj_a[2:], obj_b[2:])
+            distance = get_euclidean_distance(obj_a[2:], obj_b[2:],0,1)
             name_a = obj_a[0] + "/" + obj_a[1]
             name_b = obj_b[0] + "/" + obj_b[1]
             distances.append((name_a,name_b,distance))
-    #makeCSVfromArray(res, 'distanceEucl.csv',)
-    print(distances)
     return distances
+
+def getDistanceToMesh(folder, mesh):
+    fEx = FeatureExtractor('normalisedDB/' + folder + '/' + mesh)
+    data = {dataTypes.CLASS.value : folder, dataTypes.FILE.value : mesh}
+    features = fEx.getFeatures()
+    data.update(features)
+    query_mesh_features = list(data.values())
+
+    DB = getFeatures()
+    distances = []
+    for a in range(len(DB)):
+        obj_a = DB[a]
+        if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
+            continue
+        distance = get_cosine_distance(obj_a[2:], query_mesh_features[2:])
+        name_a = obj_a[0] + "/" + obj_a[1]
+        distances.append((name_a,distance))
+    
+    result = min(distances,key=lambda couple:couple[1])
+    lowest_distance = result[1]
+    most_resemblence = result[0]
+    print("MOST RESEMBELENCE IS " + most_resemblence + " WITH DISTANCE " + str(lowest_distance))
+
 
 def getFeatures():
     df = pd.read_csv('featuresnormalised.csv')
