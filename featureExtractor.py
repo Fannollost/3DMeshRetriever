@@ -4,13 +4,16 @@ from shapeDescriptors import globalShapeDescriptorTypes as globalDescriptors
 from shapeDescriptors import propertyDescriptorTypes as propertyDescriptors
 from shapeDescriptors import histogramLimits
 import numpy as np
-import meshplex
 from math import pi
 import random
 from scipy.spatial import ConvexHull, distance
 import scipy
 from itertools import combinations
 from helper import getEveryElementFromEveryList
+from meshDataTypes import dataTypes as dataType
+import csv
+
+import pandas as pd
 
 SapeProperties = True
 
@@ -66,6 +69,7 @@ class FeatureExtractor:
                 features["D3_"+str(i)] = D3[1][i]
             for i in range(len(D4[0])):
                 features["D4_" + str(i)] = D4[1][i]
+
         return features
 
     def getA3(self, samples):
@@ -225,8 +229,64 @@ class FeatureExtractor:
         cov = np.cov(V)
         eig, vec = np.linalg.eig(cov)
         return abs(np.max(eig)) / abs(np.min(eig))
+
+    """" df = pd.read_csv(featuresfile)
+
+        classes = df[dataType.CLASS.value]sad
+        allFeaters = []
+        features = { dataType.CLASS.value : 0, dataType.FILE.value : 0, globalDescriptors.SURFACE_AREA.value : 0 , globalDescriptors.VOLUME.value : 0,
+                         globalDescriptors.RECTANGULARITY.value : 0, globalDescriptors.COMPACTNESS.value : 0,
+                         globalDescriptors.CONVEXITY.value: 0, globalDescriptors.ECCENTRICITY.value : 0,
+                         globalDescriptors.DIAMETER.value : 0, propertyDescriptors.A3.value : 0, propertyDescriptors.D1.value : 0, propertyDescriptors.D2.value : 0, propertyDescriptors.D3.value : 0 , propertyDescriptors.D4.value:0 } 
+
+        with open(featuresfile, mode='w') as file:
+            
+
+
+        for feature in features:
+            if(feature == dataType.CLASS.value or feature == dataType.FILE.value):
+                continue
+
+            max = np.max(df[feature])
+
+            for i in range(len(df[dataType.CLASS.value])):
+
+            
+
+
+
+        for c in classes:
+            
+            for feature in globalfeatures:
+                if(feature == dataType.CLASS.value or feature == dataType.FILE.value):
+                    continue
+                data = df[feature]
+                max = np.max(data)
+                normalisedData = [d / max for d in data]
+                globalfeatures[feature] = normalisedData
+
+            propertyfeatures = {propertyDescriptors.A3.value : 0, propertyDescriptors.D1.value : 0, propertyDescriptors.D2.value : 0, propertyDescriptors.D3.value : 0 , propertyDescriptors.D4.value:0}
+
+            totalFeatures = globalfeatures
+            f = []
+            for property in propertyfeatures:
+                acc = []
+                for i in range(8):
+                    data = df[property + "_" + str(i)]
+                    acc.append(data)
+
+                max = np.max(acc)
+                normalisedData = np.array([d / max for d in acc])
+
+                for i in range(8):
+                    totalFeatures[property + "_" + str(i)] = normalisedData[1,:].tolist()
+            f = []
+            f.append(totalFeatures)
+
+            return f
+        """
         # vertices = self.mesh.vertex_matrix()
-        # bary = np.mean(vertices, axis=0)
+        # bary = np.mean(vertices, axis=0)w
         # vertices -= bary
         # print("start Cov")
         # cov = np.cov(vertices)

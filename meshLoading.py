@@ -13,7 +13,6 @@ from helper import getEveryElementFromEveryList
 
 
 targetVertices = 10000
-target_edge_length = 0.01
 
 class Mesh:
     
@@ -56,7 +55,7 @@ class Mesh:
         if quads and not(triangles):
             print("We have quads only")
         eigen_values, eigen_vectors = self.getPCA()
-        
+
         boundingbox = [self.mesh.bounding_box().dim_x(), self.mesh.bounding_box().dim_y(), self.mesh.bounding_box().dim_z()]
         analyzedData = { data.CLASS.value : classType, data.FILE.value : self.fileName, data.AMOUNT_FACES.value : self.mesh.face_number(), data.AMOUNT_VERTICES.value : self.mesh.vertex_number(),
                          data.BARY_CENTER.value : bary_data['barycenter'], data.SIZE.value : np.array(boundingbox), data.MAX_SIZE.value : max(boundingbox),
@@ -66,8 +65,8 @@ class Mesh:
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
-        self.remesh()
         self.normaliseVertices()
+        self.remesh()
         d = self.getAnalyzedData()
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
         return d
@@ -79,8 +78,8 @@ class Mesh:
                                                      axisz = -1 * d[data.BARY_CENTER.value][2])
         self.alignAxises()
         self.flipMesh()
-        d = self.getAnalyzedData()
         self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
+        d = self.getAnalyzedData()
 
     def orientation(self):
         faceMatrix = self.mesh.face_matrix()
@@ -165,17 +164,11 @@ class Mesh:
         i = 0
         stats = self.getAnalyzedData()
 
-        while((stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 or stats[data.AMOUNT_VERTICES.value] > targetVertices - 1000) and i < 3):
-            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1)
-            i+=1
-            stats=self.getAnalyzedData()
-        """"self.pymesh.generate_iso_parametrization_remeshing(samplingrate=2)
-
-        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 5):
+        """while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 2):
             if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
                 try:
                     print("KANKERER")
-                    self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
+                    self.pymesh.apply_filter('meshing_surface_subdivision_midpoint', threshold=pml.Percentage(0), iterations=1)
                 except:
                     print("FD")
                     self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
@@ -192,10 +185,17 @@ class Mesh:
            self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
         """
         stats = self.getAnalyzedData()
-        try:
-            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
-        except:
-            print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+        i = 0
+        target_edge_length = 0.02
+        while(i < 5):
+            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1, adaptive=True)
+            i+=1
+            stats=self.getAnalyzedData()
+        #stats = self.getAnalyzedData()
+        #try:
+        #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
+        #except:
+        #    print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
         
         print(self.mesh.vertex_number())
 
