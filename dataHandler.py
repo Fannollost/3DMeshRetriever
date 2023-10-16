@@ -6,8 +6,9 @@ import pandas as pd
 from featureExtractor import FeatureExtractor
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from distance import euclidianDistance
-
+from distance import get_cosine_distance
+import paths
+from helper import flatten_list, get_all_files, get_immediate_subdirectories
 
 class dataExporter:
 
@@ -21,7 +22,6 @@ class dataExporter:
 
 def normaliseFeatures(featuresfile, toSave):
     df = pd.read_csv(featuresfile)
-
     scaler = MinMaxScaler()
 
     group_size = 8
@@ -34,30 +34,29 @@ def normaliseFeatures(featuresfile, toSave):
 
     df.to_csv(toSave, index=False)
 
-def getDistances():
+def getAllDistances():
     DB = getFeatures()
     res = []
-    i =0
-    for obj1 in DB:
-        row = {}
-        row['OBJ1']=obj1["Class"]+'/'+obj1["File"]
-        for obj2 in DB:
-            row[obj2["Class"]+'/'+obj2["File"]] = euclidianDistance(obj1, obj2)[0]
-        res.append(row)
-        i+=1
-        if i%20==0 : print(str(int(i/380*100))+" %")
-    makeCSVfromArray(res, 'distanceEucl.csv',)
-    return res
+    i = 0
+    
+    distances = []
+    for a in range(len(DB)):
+        for b in range(i + 1,len(DB)):
+            obj_a = DB[a]
+            obj_b = DB[b]
+            distance = get_cosine_distance(obj_a[2:], obj_b[2:])
+            name_a = obj_a[0] + "/" + obj_a[1]
+            name_b = obj_b[0] + "/" + obj_b[1]
+            distances.append((name_a,name_b,distance))
+    #makeCSVfromArray(res, 'distanceEucl.csv',)
+    print(distances)
+    return distances
 
 def getFeatures():
     df = pd.read_csv('featuresnormalised.csv')
-    databasefeatures = []
-    line = {}
-    for i, row in df.iterrows():
-        for colName in df.columns:
-            line[colName] = row[colName]
-        if len(line)>0: databasefeatures.append(line)
-    return databasefeatures
+    header = df.columns.tolist()
+    data_array = df.to_numpy().tolist()
+    return data_array
 
 def exportBasicData(normalised):
     if(normalised == 'normalised'):
@@ -75,7 +74,6 @@ def exportBasicData(normalised):
             
     return alldata
 
-
 def getFolderFeatures(folderName):
     files = get_all_files('normalisedDB/' + folderName + '/')
     folderData = []
@@ -91,19 +89,21 @@ def getAllFeatures():
     directories = get_immediate_subdirectories('normaliseddb/')
     DBfeatures = []
     for dir in directories:
-        folderData = getFolderFeatures()
+        folderData = getFolderFeatures('normaliseddb/' + dir)
         DBfeatures.append(folderData)
-    return DBfeatures
+    
+    return flatten_list(DBfeatures)
 
-def normalizeDB():
-    directories = get_immediate_subdirectories('db/')
+def normalizeDB(db):
+    directories = get_immediate_subdirectories(db)
     DBdata = []
     for dir in directories:
         if(os.path.exists('normalisedDB/' + dir) == False):
             os.makedirs('normalisedDB/' + dir)
         folderData = normalizeFolder(dir)
         DBdata.append(folderData)
-    return DBdata
+    print(DBdata)
+    return flatten_list(DBdata)
 
 def normalizeFolder(folderName):
     files = get_all_files('db/' + folderName + '/') 
@@ -114,13 +114,6 @@ def normalizeFolder(folderName):
         folderData.append(data)
     return folderData
                 
-
 def makeCSVfromArray(array, filename):
     df = pd.DataFrame(array, array[0].keys())
     df.to_csv(filename,mode="w")
-
-def get_immediate_subdirectories(dir):
-    return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir,name))]
-
-def get_all_files(dir):
-    return  [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
