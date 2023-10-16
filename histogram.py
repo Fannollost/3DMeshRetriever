@@ -3,8 +3,10 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 # Parameters
-N = 100
-no_bins = int(round(np.sqrt(N)))  # Recommended number of bins
+#N = 100
+N = 2400
+#no_bins = int(round(np.sqrt(N)))  # Recommended number of bins
+no_bins = 30
 
 class Graph():
     def getHisto(self, csv, data, title):
@@ -13,12 +15,16 @@ class Graph():
 
         # Compute histogram
         counts, bins = np.histogram(db_data, bins=no_bins)
+        #counts, bins = np.histogram(db_data, bins=no_bins, range=[8000,12000])
+        print(counts)
+        print(bins)
 
         # Plot histogram
         fig, ax = plt.subplots()
-        ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
-        #ax.hist(bins[:-1], weights=counts, range=[0, 12000])
-        ax.set_title(title)
+        ax.hist(bins[:-1], bins=no_bins, weights=counts)
+        #ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
+        #ax.hist(bins[:-1], bins, weights=counts, range=[0, 12000])
+        ax.set_title(title + ' - New database')
         ax.set_ylabel("Number of samples per bin")
         ax.set_xlabel(data)
 
