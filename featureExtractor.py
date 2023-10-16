@@ -4,13 +4,16 @@ from shapeDescriptors import globalShapeDescriptorTypes as globalDescriptors
 from shapeDescriptors import propertyDescriptorTypes as propertyDescriptors
 from shapeDescriptors import histogramLimits
 import numpy as np
-import meshplex
 from math import pi
 import random
 from scipy.spatial import ConvexHull, distance
 import scipy
 from itertools import combinations
 from helper import getEveryElementFromEveryList
+from meshDataTypes import dataTypes as dataType
+import csv
+
+import pandas as pd
 import open3d
 
 SapeProperties = True
@@ -67,6 +70,7 @@ class FeatureExtractor:
                 features["D3_"+str(i)] = D3[1][i]
             for i in range(len(D4[0])):
                 features["D4_" + str(i)] = D4[1][i]
+
         return features
 
     def getA3(self, samples):
