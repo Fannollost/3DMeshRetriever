@@ -14,6 +14,7 @@ from meshDataTypes import dataTypes as dataType
 import csv
 
 import pandas as pd
+import open3d
 
 SapeProperties = True
 
@@ -30,17 +31,17 @@ class FeatureExtractor:
                      globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
                      globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull(), globalDescriptors.ECCENTRICITY.value : self.getEccentric(),
                      globalDescriptors.DIAMETER.value : self.getDiameter()} 
-                       
+        
         samples = 100000
 
         ## TODO 
         #SURFACE_AREA = "Surface Area"
         #VOLUME = "Volume"
         #COMPACTNESS = "Compactness"
-        #RECTANGULARITY = "Rectangularity"
+        RECTANGULARITY = "Rectangularity"
         #DIAMETER = "Diameter"
         #CONVEXITY = "Convexity"
-        ECCENTRICITY = "Eccentricity"
+        #ECCENTRICITY = "Eccentricity"
         # A3 = "A3"
         # D1 = "D1"
         # D2 = "D2"
@@ -202,7 +203,6 @@ class FeatureExtractor:
         vertices = self.mesh.vertex_matrix()
         faces = self.mesh.face_matrix()
 
-        hull = ConvexHull(vertices)
         volume = 0.0
 
         for f in faces:
@@ -229,68 +229,41 @@ class FeatureExtractor:
         cov = np.cov(V)
         eig, vec = np.linalg.eig(cov)
         return abs(np.max(eig)) / abs(np.min(eig))
+    
+    def getOBB(self):
+        show_aabb = True
+        show_obb = True
+        mesh = open3d.io.read_triangle_mesh(self.meshPath)
+        obb = mesh.get_oriented_bounding_box()
 
-    """" df = pd.read_csv(featuresfile)
+        # Get axis-aligned bounding box (AABB)
+        aabb = mesh.get_axis_aligned_bounding_box()
+        aabb_points = aabb.get_box_points()
+        aabb_line_indices = [[0, 1], [1, 6], [6, 3], [3, 0], [0, 2], [2, 5], [5, 4], [4, 7], [7, 2], [6, 4], [1, 7], [3, 5]]
+        aabb_lineset = open3d.geometry.LineSet(
+            points=open3d.utility.Vector3dVector(aabb_points),
+            lines=open3d.utility.Vector2iVector(aabb_line_indices),
+        )
+        red = [255, 0, 0]
+        aabb_lineset.colors = open3d.utility.Vector3dVector(np.array([red] * 12))
 
-        classes = df[dataType.CLASS.value]sad
-        allFeaters = []
-        features = { dataType.CLASS.value : 0, dataType.FILE.value : 0, globalDescriptors.SURFACE_AREA.value : 0 , globalDescriptors.VOLUME.value : 0,
-                         globalDescriptors.RECTANGULARITY.value : 0, globalDescriptors.COMPACTNESS.value : 0,
-                         globalDescriptors.CONVEXITY.value: 0, globalDescriptors.ECCENTRICITY.value : 0,
-                         globalDescriptors.DIAMETER.value : 0, propertyDescriptors.A3.value : 0, propertyDescriptors.D1.value : 0, propertyDescriptors.D2.value : 0, propertyDescriptors.D3.value : 0 , propertyDescriptors.D4.value:0 } 
+        obb_points = obb.get_box_points()
+        obb_line_indices = [[0, 1], [1, 6], [6, 3], [3, 0], [0, 2], [2, 5], [5, 4], [4, 7], [7, 2], [6, 4], [1, 7], [3, 5]]
+        obb_lineset = open3d.geometry.LineSet(
+            points=open3d.utility.Vector3dVector(obb_points),
+            lines=open3d.utility.Vector2iVector(obb_line_indices),
+        )
+        blue = [0, 0, 255]
+        obb_lineset.colors = open3d.utility.Vector3dVector(np.array([blue] * 12))
 
-        with open(featuresfile, mode='w') as file:
-            
-
-
-        for feature in features:
-            if(feature == dataType.CLASS.value or feature == dataType.FILE.value):
-                continue
-
-            max = np.max(df[feature])
-
-            for i in range(len(df[dataType.CLASS.value])):
-
-            
-
-
-
-        for c in classes:
-            
-            for feature in globalfeatures:
-                if(feature == dataType.CLASS.value or feature == dataType.FILE.value):
-                    continue
-                data = df[feature]
-                max = np.max(data)
-                normalisedData = [d / max for d in data]
-                globalfeatures[feature] = normalisedData
-
-            propertyfeatures = {propertyDescriptors.A3.value : 0, propertyDescriptors.D1.value : 0, propertyDescriptors.D2.value : 0, propertyDescriptors.D3.value : 0 , propertyDescriptors.D4.value:0}
-
-            totalFeatures = globalfeatures
-            f = []
-            for property in propertyfeatures:
-                acc = []
-                for i in range(8):
-                    data = df[property + "_" + str(i)]
-                    acc.append(data)
-
-                max = np.max(acc)
-                normalisedData = np.array([d / max for d in acc])
-
-                for i in range(8):
-                    totalFeatures[property + "_" + str(i)] = normalisedData[1,:].tolist()
-            f = []
-            f.append(totalFeatures)
-
-            return f
-        """
-        # vertices = self.mesh.vertex_matrix()
-        # bary = np.mean(vertices, axis=0)w
-        # vertices -= bary
-        # print("start Cov")
-        # cov = np.cov(vertices)
-        # print("start eig")
-        # eigenval, eigenvec = np.linalg.eig(cov)
-        # print(eigenval)
-        # return abs(np.max(eigenval)) / abs(np.min(eigenval))
+        # Visualize the geometry
+        to_draw = [mesh]
+        to_draw.append(aabb_lineset) if show_aabb else print("Not showing Axis-Aligned Bounding Box")
+        to_draw.append(obb_lineset) if show_obb else print("Not showing Oriented Bounding Box")
+        open3d.visualization.draw_geometries(
+            to_draw,
+            width=1280,
+            height=720,
+            mesh_show_wireframe=True
+        )
+        return obb.volume()
