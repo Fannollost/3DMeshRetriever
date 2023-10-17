@@ -22,6 +22,14 @@ class dataExporter:
 
 def normaliseFeatures(featuresfile, toSave):
     df = pd.read_csv(featuresfile)
+    columns = df.columns
+    for column in columns:
+        if column[:2] not in ['A3', 'D1', 'D2', 'D3', 'D4'] and column not in ['File', 'Class']:
+            minVal = min(df[column].tolist())
+            maxVal = max(df[column].tolist())
+            df[column] = (df[column] - minVal) / (maxVal - minVal)
+    
+    """df = pd.read_csv(featuresfile)
     scaler = MinMaxScaler()
 
     group_size = 8
@@ -30,8 +38,7 @@ def normaliseFeatures(featuresfile, toSave):
     for group in column_groups:
         for column in group[2:]:
             if df[column].dtype in [int, float]:
-                df[column] = scaler.fit_transform(df[[column]])
-
+                df[column] = scaler.fit_transform(df[[column]])"""
     df.to_csv(toSave, index=False)
 
 def getAllDistances():

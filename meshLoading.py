@@ -12,7 +12,7 @@ from helper import getEveryElementFromEveryList
 
 
 
-targetVertices = 10000
+targetVertices = 6000
 
 class Mesh:
     

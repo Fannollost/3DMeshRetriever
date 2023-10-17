@@ -92,7 +92,7 @@ def QueryMesh(folder, mesh, nrOfResults):
 #FOR DISTANCE MATRIX USE:           python main.py distance
 #------------------------------------------------------------------------------------
 def DistanceMatrix():
-    #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getAllDistances()
 
 
@@ -124,7 +124,7 @@ def main():
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()
 
-    if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv==6)):
+    if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv)==6):
         # TO RENDER, USE:                   python main.py render path_file
         if(sys.argv[1] == input.RENDER):
             Render(len(sys.argv),sys.argv[2])
