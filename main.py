@@ -85,14 +85,14 @@ def Feature(folder):
 #------------------------------------------------------------------------------------
 #FOR NORMALISE FEATURES USE:        python main.py query <folder> <object>  
 #------------------------------------------------------------------------------------
-def QueryMesh(folder, mesh):
-    getDistanceToMesh(folder, mesh)
+def QueryMesh(folder, mesh, nrOfResults):
+    getDistanceToMesh(folder, mesh, nrOfResults)
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
 #------------------------------------------------------------------------------------
 def DistanceMatrix():
-    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getAllDistances()
 
 
@@ -124,7 +124,7 @@ def main():
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()
 
-    if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5):
+    if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv==6)):
         # TO RENDER, USE:                   python main.py render path_file
         if(sys.argv[1] == input.RENDER):
             Render(len(sys.argv),sys.argv[2])
@@ -153,9 +153,9 @@ def main():
             r = Renderer()
             r.renderWireFrame(sys.argv[3])
 
-        #FOR NORMALISE FEATURES USE:        python main.py query
+        #FOR NORMALISE FEATURES USE:        python main.py query <folder> <file> <resultsWanted>
         if(sys.argv[1] == input.QUERY):
-            QueryMesh(sys.argv[2], sys.argv[3])
+            QueryMesh(sys.argv[2], sys.argv[3], sys.argv[4])
 
     if(sys.argv[1] == input.GRAPH):
         Graph()

@@ -9,7 +9,7 @@ import numpy as np
 from distance import get_cosine_distance, get_euclidean_distance
 import paths
 from helper import flatten_list, get_all_files, get_immediate_subdirectories
-
+import heapq
 class dataExporter:
 
     def __init__(self, fileName, data):
@@ -48,7 +48,8 @@ def getAllDistances():
             distances.append((name_a,name_b,distance))
     return distances
 
-def getDistanceToMesh(folder, mesh):
+def getDistanceToMesh(folder, mesh, nrOfResults):
+    print(nrOfResults)
     fEx = FeatureExtractor('normalisedDB/' + folder + '/' + mesh)
     data = {dataTypes.CLASS.value : folder, dataTypes.FILE.value : mesh}
     features = fEx.getFeatures()
@@ -61,18 +62,23 @@ def getDistanceToMesh(folder, mesh):
         obj_a = DB[a]
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
-        distance = get_cosine_distance(obj_a[2:], query_mesh_features[2:])
+        distance = get_euclidean_distance(obj_a[2:], query_mesh_features[2:], 0, 1, True)
         name_a = obj_a[0] + "/" + obj_a[1]
         distances.append((name_a,distance))
     
-    result = min(distances,key=lambda couple:couple[1])
-    lowest_distance = result[1]
-    most_resemblence = result[0]
-    print("MOST RESEMBELENCE IS " + most_resemblence + " WITH DISTANCE " + str(lowest_distance))
+    sorted_result = sorted(distances,key=lambda couple:couple[1])
+    x_closest_results = sorted_result[:int(nrOfResults)]
+
+    for result in x_closest_results:
+        lowest_distance = result[1]
+        most_resemblence = result[0]
+        print("RESEMBLANCE: " + most_resemblence + " WITH DISTANCE " + str(lowest_distance))
+
+
 
 
 def getFeatures():
-    df = pd.read_csv('featuresnormalised.csv')
+    df = pd.read_csv('features.csv')
     header = df.columns.tolist()
     data_array = df.to_numpy().tolist()
     return data_array
@@ -108,7 +114,7 @@ def getAllFeatures():
     directories = get_immediate_subdirectories('normaliseddb/')
     DBfeatures = []
     for dir in directories:
-        folderData = getFolderFeatures('normaliseddb/' + dir)
+        folderData = getFolderFeatures(dir)
         DBfeatures.append(folderData)
     
     return flatten_list(DBfeatures)

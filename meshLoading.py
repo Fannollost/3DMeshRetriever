@@ -141,6 +141,7 @@ class Mesh:
         self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
         self.pymesh.apply_filter('meshing_remove_duplicate_faces')
         self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
+        self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
 
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist

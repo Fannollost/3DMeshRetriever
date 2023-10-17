@@ -12,7 +12,7 @@ def get_manhattan_distance(vec_a, vec_b, range_min, range_max, normalize=True):
     return dist
 
 def get_euclidean_distance(vec_a, vec_b, range_min, range_max, normalize=True):
-    dist = np.linalg.norm(vec_a - vec_b)
+    dist = np.linalg.norm([x-y for (x,y) in zip(vec_a, vec_b)])
     if normalize:
         max_dist = np.sqrt(len(vec_a) * ((range_max - range_min)**2))
         dist /= max_dist
