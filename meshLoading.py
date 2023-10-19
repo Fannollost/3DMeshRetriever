@@ -65,6 +65,7 @@ class Mesh:
     def normaliseMesh(self):
         self.getAnalyzedData()
         self.removeUnwantedMeshData()
+        self.uniform()
         self.normaliseVertices()
         self.remesh()
         d = self.getAnalyzedData()
@@ -78,8 +79,8 @@ class Mesh:
                                                      axisz = -1 * d[data.BARY_CENTER.value][2])
         self.alignAxises()
         self.flipMesh()
-        self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
         d = self.getAnalyzedData()
+        self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
 
     def orientation(self):
         faceMatrix = self.mesh.face_matrix()
@@ -142,6 +143,9 @@ class Mesh:
         self.pymesh.apply_filter('meshing_remove_duplicate_faces')
         self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
         self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+        self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
+        self.pymesh.apply_filter('meshing_close_holes')    
+
 
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist
@@ -161,17 +165,14 @@ class Mesh:
         with open(file_path, 'w') as outfile:
             outfile.writelines(processed)
     
+    def uniform(self):
+        self.pymesh.meshing_isotropic_explicit_remeshing(targetlen= pml.Percentage(0.8), iterations=1, adaptive = True)
+        print("WTF"+ str(self.mesh.vertex_number()))
+
     def remesh(self):
+        i =0
         stats = self.getAnalyzedData()
-        i = 0
-        target_edge_length = 0.02
-        while(i < 5):
-            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1, adaptive=True)
-            i+=1
-            stats=self.getAnalyzedData()
-        i = 0
-        stats = self.getAnalyzedData()
-        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 2):
+        while((stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 or stats[data.AMOUNT_VERTICES.value] > targetVertices + 1000) and i < 5):
             if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
                 try:
                     print("KANKERER")
@@ -191,11 +192,13 @@ class Mesh:
         if(stats[data.AMOUNT_VERTICES.value] > targetVertices):
            self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
         
-        #stats = self.getAnalyzedData()
-        #try:
-        #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
-        #except:
-        #    print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+        #self.pymesh.apply_filter('meshing_isotropic_explicit_remeshing')
+                
+        self.removeUnwantedMeshData()
+        try:
+            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
+        except:
+            print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
         
         print(self.mesh.vertex_number())
 
