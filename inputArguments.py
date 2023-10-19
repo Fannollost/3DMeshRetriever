@@ -11,3 +11,7 @@ QUERY = 'query'
 BASICDATA = 'basicdata'
 NORMALISED = 'normalised'
 DISTANCE = 'distance'
+
+MINIDB = 'minidb/'
+MICRODB = 'microdb/'
+DB = 'db/'

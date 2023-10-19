@@ -12,7 +12,7 @@ from helper import getEveryElementFromEveryList
 
 
 
-targetVertices = 10000
+targetVertices = 6000
 
 class Mesh:
     
@@ -141,6 +141,7 @@ class Mesh:
         self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
         self.pymesh.apply_filter('meshing_remove_duplicate_faces')
         self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
+        self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
 
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist
@@ -161,10 +162,16 @@ class Mesh:
             outfile.writelines(processed)
     
     def remesh(self):
+        stats = self.getAnalyzedData()
+        i = 0
+        target_edge_length = 0.02
+        while(i < 5):
+            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1, adaptive=True)
+            i+=1
+            stats=self.getAnalyzedData()
         i = 0
         stats = self.getAnalyzedData()
-
-        """while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 2):
+        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 2):
             if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
                 try:
                     print("KANKERER")
@@ -183,14 +190,7 @@ class Mesh:
 
         if(stats[data.AMOUNT_VERTICES.value] > targetVertices):
            self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
-        """
-        stats = self.getAnalyzedData()
-        i = 0
-        target_edge_length = 0.02
-        while(i < 5):
-            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1, adaptive=True)
-            i+=1
-            stats=self.getAnalyzedData()
+        
         #stats = self.getAnalyzedData()
         #try:
         #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
