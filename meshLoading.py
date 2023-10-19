@@ -46,8 +46,8 @@ class Mesh:
             if len(face) == 3:
                 triangles = True
         
-        if triangles and not(quads):
-            print("We only have triangles")
+        # if triangles and not(quads):
+        #     print("We only have triangles")
         if quads and triangles:
             print("We have a mix of triangles and quads")
         if quads and not(triangles):
