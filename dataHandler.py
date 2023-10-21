@@ -137,16 +137,16 @@ def normalizeDB(db):
     for dir in directories:
         if(os.path.exists('normalisedDB/' + dir) == False):
             os.makedirs('normalisedDB/' + dir)
-        folderData = normalizeFolder(dir)
+        folderData = normalizeFolder(dir, db)
         DBdata.append(folderData)
     print(DBdata)
     return flatten_list(DBdata)
 
-def normalizeFolder(folderName):
-    files = get_all_files('db/' + folderName + '/') 
+def normalizeFolder(folderName, db):
+    files = get_all_files(db + folderName + '/') 
     folderData = []
     for file in files:
-        mesh = Mesh('db/' + folderName + '/' + file)
+        mesh = Mesh(db + folderName + '/' + file)
         data = mesh.normaliseMesh() 
         folderData.append(data)
     return folderData
