@@ -86,7 +86,9 @@ def Feature(folder):
 #FOR NORMALISE FEATURES USE:        python main.py query <folder> <object>  
 #------------------------------------------------------------------------------------
 def QueryMesh(folder, mesh, nrOfResults):
-    getDistanceToMesh(folder, mesh, nrOfResults)
+    paths = getDistanceToMesh(folder, mesh, nrOfResults)
+    
+
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
@@ -159,5 +161,6 @@ def main():
 
     if(sys.argv[1] == input.GRAPH):
         Graph()
-        
+
 main()
+        

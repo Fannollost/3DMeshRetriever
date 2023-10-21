@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
-import threading
-import polyscope as ps
+import os.path
+from pathlib import Path
+from renderer import display_mesh_list
+from dataHandler import getDistanceToMesh
 
 class MainApplication:
     def __init__(self, root):
@@ -59,16 +61,14 @@ class RenderWindow:
 
         self.button_render = tk.Button(self.root, text="Start Render", command=self.open_file_render, width = 10)
         self.button_render.pack(pady=5)
-        #self.button_render.place(x = self.root.winfo_width()/2, y = 150)
 
         left_arrow = '\u2190'
         self.button_back = tk.Button(self.root, text=left_arrow, font=("Arial", 15), command=self.back_to_main)
         self.button_back.place(x = 0, y = 0)
 
     def open_file_render(self):
-        # TODO link to renderer
-        for file_path in self.selected_files:
-            print(file_path)
+        print(self.selected_files)
+        display_mesh_list(self.selected_files)
 
 
     def open_file_dialog(self):
@@ -86,15 +86,22 @@ class QueryWindow:
         self.root = root
         self.main_app = main_app
         self.root.title("Query Mesh")
-        self.root.geometry("400x100")
+        self.root.geometry("400x150")
 
         self.frame = tk.Frame(self.root)
         self.frame.pack(pady=20)
 
         self.selected_files = []
 
-        self.button_select_files = tk.Button(self.frame, text="Select Files", command=self.select_files)
-        self.button_select_files.pack()
+        canvas= tk.Canvas(self.frame, width= 400, height= 30)
+        canvas.create_text(200, 10, text="How many examples are you looking for?", fill="black", font=('Helvetica 9'))
+        canvas.pack()
+
+        self.spinbox = tk.Spinbox(self.frame, from_= 1, to = 5,width=5)
+        self.spinbox.pack()
+
+        self.button_select_files = tk.Button(self.frame, text="Select Mesh", command=self.select_files)
+        self.button_select_files.pack(pady = 20)
 
         left_arrow = '\u2190'
         self.button_back = tk.Button(self.root, text=left_arrow, font=("Arial", 15), command=self.back_to_main)
@@ -109,22 +116,18 @@ class QueryWindow:
             self.open_Error_window()
             self.selected_files = []
         elif self.selected_files:
-            # TODO link to querying
-            print("One selected : " + self.selected_files[0])
+            file = Path(self.selected_files[0])
+            basepath, fileName = os.path.split(file)
+            basepath, className = os.path.split(basepath)
+            filepaths = getDistanceToMesh(className, fileName, self.spinbox.get())
+            paths = []
+            for path in filepaths:
+                paths.append(basepath + "/"+ path)
+            display_mesh_list(paths)
 
     def open_Error_window(self):
         new_window = tk.Toplevel(self.root)
         ErrorWindow(new_window, self)
-
-    def open_polyscope(self):
-        for file_path in self.selected_files:
-            def open_polyscope():
-                ps.init()
-                ps.show_mesh(file_path)
-                ps.show()
-
-            thread = threading.Thread(target=open_polyscope)
-            thread.start()
 
     def back_to_main(self):
         self.root.destroy()
