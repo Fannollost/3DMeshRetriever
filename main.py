@@ -7,6 +7,7 @@ import inputArguments as input
 from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh
 from histogram import Graph
 import paths
+from tsne import tsne
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -98,6 +99,11 @@ def DistanceMatrix():
     normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getAllDistances()
 
+#------------------------------------------------------------------------------------
+#FOR VISUALIZATION USE:             python main.py tsne
+#------------------------------------------------------------------------------------
+def VisualizeFeatureSpace():
+    print("F") 
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
@@ -126,6 +132,10 @@ def main():
     #FOR DISTANCE MATRIX USE:           python main.py distance
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()
+
+    #FOR VISUALIZATION USE:             python main.py tsne
+    if(sys.argv[1] == input.TSNE):
+        VisualizeFeatureSpace()
 
     if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv)==6):
         # TO RENDER, USE:                   python main.py render path_file

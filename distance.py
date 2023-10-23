@@ -1,4 +1,4 @@
-from shapeDescriptors import weight
+from shapeDescriptors import weight, histogramLimits
 import numpy as np
 
 def get_manhattan_distance(vec_a, vec_b, range_min, range_max, normalize=True):
@@ -11,14 +11,37 @@ def get_manhattan_distance(vec_a, vec_b, range_min, range_max, normalize=True):
 
     return dist
 
-def get_euclidean_distance(vec_a, vec_b, range_min, range_max, normalize=True):
-    dist = np.linalg.norm([x-y for (x,y) in zip(vec_a, vec_b)])
-    if normalize:
-        max_dist = np.sqrt(len(vec_a) * ((range_max - range_min)**2))
-        dist /= max_dist
-    
-    return dist
+def euclidianDist(f1, f2):
+    sumDist = 0
+    tot_weight = 0
+    max_weight = sum(list(weight.values()))
+    for key in range(len(f2) - 2):
+        ka = getProperty(key)
+        k = ka[:2]
+        key = key + 2
+        if k=="A3" or k=="D1" or k=="D2" or k=="D3" or k=="D4":
+            featureDist = (weight[k] / (max_weight * histogramLimits[k])) * abs(f1[key] - f2[key]) ** 2
+            tot_weight += weight[k] / (max_weight * histogramLimits[k])
+            sumDist += featureDist
+        elif ka not in ['File', 'Class'] :
+            featureDist = (weight[ka] / max_weight) * abs(f1[key] - f2[key]) ** 2
+            tot_weight += weight[ka] / max_weight
+            sumDist += featureDist
+    return sumDist**0.5
 
+def getProperty(key):
+    if(key >= 12 and key < 20):
+        return "A3"
+    elif(key >= 20 and key < 28):
+        return "D1"
+    elif(key >= 28 and key < 36):
+        return "D2"
+    elif(key >= 36 and key < 44):
+        return "D3"
+    elif(key >= 44 and key < 52):
+        return "D4"
+    else :
+        return list(weight.keys())[key]
 def get_cosine_distance(vec_a, vec_b, normalize=True):
     cosine_similarity = np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))    
     dist = 1 - cosine_similarity

@@ -30,4 +30,4 @@ def angleBetween(vect1, vect2):
     return np.arccos(x)
 
 def volumeTetrahydron(vect1, vect2, vect3):
-    return abs(np.dot(np.cross(vect1,vect2), vect3) / 6)
+    return np.cbrt(np.dot(np.cross(vect1,vect2), vect3) / 6)

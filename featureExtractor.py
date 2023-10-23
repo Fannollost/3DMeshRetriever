@@ -34,20 +34,6 @@ class FeatureExtractor:
         
         samples = 100000
 
-        ## TODO 
-        #SURFACE_AREA = "Surface Area"
-        #VOLUME = "Volume"
-        #COMPACTNESS = "Compactness"
-        RECTANGULARITY = "Rectangularity"
-        #DIAMETER = "Diameter"
-        #CONVEXITY = "Convexity"
-        #ECCENTRICITY = "Eccentricity"
-        # A3 = "A3"
-        # D1 = "D1"
-        # D2 = "D2"
-        # D3 = "D3"
-        # D4 = "D4"
-
         if SapeProperties:
             A3 = self.getA3(int(samples ** (1/3))+ 1) 
             print("done with A3")
