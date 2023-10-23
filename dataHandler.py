@@ -79,10 +79,15 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
     sorted_result = sorted(distances,key=lambda couple:couple[1])
     x_closest_results = sorted_result[:int(nrOfResults)]
 
+    resultpaths = []
+
     for result in x_closest_results:
+        resultpaths.append(result[0])
         lowest_distance = result[1]
         most_resemblence = result[0]
         print("RESEMBLANCE: " + most_resemblence + " WITH DISTANCE " + str(lowest_distance))
+    
+    return resultpaths
 
 
 def getFeatures():
