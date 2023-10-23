@@ -7,6 +7,7 @@ import inputArguments as input
 from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh
 from histogram import Graph
 import paths
+from tsne import tsne
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -36,7 +37,7 @@ def Analyze(meshPath):
 # TO NORMALISE EVERYTHING, USE      python main.py normalise <database> all
 #------------------------------------------------------------------------------------
 def Normalise(folder, db = ''):
-
+    print(folder)
     database = ""
     if db == 'mini':
         database = input.MINIDB
@@ -44,6 +45,8 @@ def Normalise(folder, db = ''):
         database = input.MICRODB
     elif db == 'db':
         database = input.DB
+    elif db == 'macro':
+        database = input.MACRO
     
     if(os.path.exists('normalisedDB') == False):
         os.mkdir('normalisedDB')
@@ -51,7 +54,7 @@ def Normalise(folder, db = ''):
         print(folder)
         if(os.path.exists('normalisedDB/' + folder + '/') == False):
             os.makedirs('normalisedDB/' + folder + '/')
-        folderData = normalizeFolder(folder)
+        folderData = normalizeFolder(folder, database)
         dataExporter('normalisedData.csv', folderData)
     else:
         dbData = normalizeDB(database)
@@ -86,7 +89,8 @@ def Feature(folder):
 #FOR NORMALISE FEATURES USE:        python main.py query <folder> <object>  
 #------------------------------------------------------------------------------------
 def QueryMesh(folder, mesh, nrOfResults):
-    getDistanceToMesh(folder, mesh, nrOfResults)
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    paths = getDistanceToMesh(folder, mesh, nrOfResults)
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
@@ -95,6 +99,11 @@ def DistanceMatrix():
     normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getAllDistances()
 
+#------------------------------------------------------------------------------------
+#FOR VISUALIZATION USE:             python main.py tsne
+#------------------------------------------------------------------------------------
+def VisualizeFeatureSpace():
+    print("F") 
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
@@ -123,6 +132,10 @@ def main():
     #FOR DISTANCE MATRIX USE:           python main.py distance
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()
+
+    #FOR VISUALIZATION USE:             python main.py tsne
+    if(sys.argv[1] == input.TSNE):
+        VisualizeFeatureSpace()
 
     if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv)==6):
         # TO RENDER, USE:                   python main.py render path_file
@@ -159,5 +172,6 @@ def main():
 
     if(sys.argv[1] == input.GRAPH):
         Graph()
-        
+
 main()
+        

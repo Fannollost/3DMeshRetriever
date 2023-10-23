@@ -6,7 +6,7 @@ import pandas as pd
 from featureExtractor import FeatureExtractor
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from distance import get_cosine_distance, get_euclidean_distance
+from distance import get_cosine_distance, euclidianDist
 import paths
 from helper import flatten_list, get_all_files, get_immediate_subdirectories
 import heapq
@@ -49,43 +49,49 @@ def getAllDistances():
         for b in range(a + 1,len(DB)):
             obj_a = DB[a]
             obj_b = DB[b]
-            distance = get_euclidean_distance(obj_a[2:], obj_b[2:],0,1)
+            distance = euclidianDist(obj_a, obj_b)
             name_a = obj_a[0] + "/" + obj_a[1]
             name_b = obj_b[0] + "/" + obj_b[1]
             distances.append((name_a,name_b,distance))
+        
+    print(distances)
+    makeCSVfromArray(distances, 'distancematrix.csv')
     return distances
 
 def getDistanceToMesh(folder, mesh, nrOfResults):
-    print(nrOfResults)
-    fEx = FeatureExtractor('normalisedDB/' + folder + '/' + mesh)
-    data = {dataTypes.CLASS.value : folder, dataTypes.FILE.value : mesh}
-    features = fEx.getFeatures()
-    data.update(features)
-    query_mesh_features = list(data.values())
-
     DB = getFeatures()
+    query_mesh_features = ""
+    for a in range(len(DB)):
+        obj_a = DB[a]
+        if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
+            query_mesh_features = obj_a
+            break
+
     distances = []
     for a in range(len(DB)):
         obj_a = DB[a]
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
-        distance = get_euclidean_distance(obj_a[2:], query_mesh_features[2:], 0, 1, True)
+        distance = euclidianDist(obj_a, query_mesh_features)
         name_a = obj_a[0] + "/" + obj_a[1]
         distances.append((name_a,distance))
     
     sorted_result = sorted(distances,key=lambda couple:couple[1])
     x_closest_results = sorted_result[:int(nrOfResults)]
 
+    resultpaths = []
+
     for result in x_closest_results:
+        resultpaths.append(result[0])
         lowest_distance = result[1]
         most_resemblence = result[0]
         print("RESEMBLANCE: " + most_resemblence + " WITH DISTANCE " + str(lowest_distance))
-
-
+    
+    return resultpaths
 
 
 def getFeatures():
-    df = pd.read_csv('features.csv')
+    df = pd.read_csv('featuresnormalised.csv')
     header = df.columns.tolist()
     data_array = df.to_numpy().tolist()
     return data_array
@@ -132,16 +138,16 @@ def normalizeDB(db):
     for dir in directories:
         if(os.path.exists('normalisedDB/' + dir) == False):
             os.makedirs('normalisedDB/' + dir)
-        folderData = normalizeFolder(dir)
+        folderData = normalizeFolder(dir, db)
         DBdata.append(folderData)
     print(DBdata)
     return flatten_list(DBdata)
 
-def normalizeFolder(folderName):
-    files = get_all_files('db/' + folderName + '/') 
+def normalizeFolder(folderName, db):
+    files = get_all_files(db + folderName + '/') 
     folderData = []
     for file in files:
-        mesh = Mesh('db/' + folderName + '/' + file)
+        mesh = Mesh(db + folderName + '/' + file)
         data = mesh.normaliseMesh() 
         folderData.append(data)
     return folderData

@@ -1,0 +1,26 @@
+db/Bed/D00121.obj
+db/Apartment/D00921.obj
+db/biplane/D00246.obj
+db/bookset/D01009.obj
+db/bookset/D01030.obj
+db/bookset/D01050.obj
+db/bookset/D01096.obj
+db/bookset/D01109.obj
+db/BuildingNonResidential/m404.obj
+db/BuildingNonResidential/m470.obj
+db/Cellphone/D00554.obj
+db/city/m1664.obj
+db/computerkeyboard/D00116.obj
+db/computerkeyboard/D00127.obj
+db/computerkeyboard/D00278.obj
+db/computerkeyboard/D00654.obj
+db/computerkeyboard/D00569.obj
+db/desklamp/D00330.obj
+db/desklamp/D00797.obj
+db/deskphone/D00154.obj
+db/deskphone/D00957.obj
+db/drum/D00298.obj
+db/drum/D00404.obj
+db/drum/D00551.obj
+
+Done untill fish

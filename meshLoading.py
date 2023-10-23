@@ -11,8 +11,7 @@ import mathHelper
 from helper import getEveryElementFromEveryList
 
 
-
-targetVertices = 6000
+targetVertices = 7000
 
 class Mesh:
     
@@ -23,7 +22,6 @@ class Mesh:
         self.pymesh = pml.MeshSet()   
         self.pymesh.load_new_mesh(meshPath)
         self.mesh = self.pymesh.current_mesh()
-
     """
     Extract all faces and vertices from obj file
     """
@@ -48,8 +46,8 @@ class Mesh:
             if len(face) == 3:
                 triangles = True
         
-        if triangles and not(quads):
-            print("We only have triangles")
+        # if triangles and not(quads):
+        #     print("We only have triangles")
         if quads and triangles:
             print("We have a mix of triangles and quads")
         if quads and not(triangles):
@@ -63,13 +61,18 @@ class Mesh:
         return analyzedData
 
     def normaliseMesh(self):
-        self.getAnalyzedData()
         self.removeUnwantedMeshData()
+        self.getAnalyzedData()
+        self.normaliseNormals()
         self.normaliseVertices()
         self.remesh()
+        print(self.mesh.vertex_number())
         d = self.getAnalyzedData()
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
         return d
+
+    def normaliseNormals(self):
+        self.pymesh.apply_filter('meshing_invert_face_orientation', forceflip = False)
 
     def normaliseVertices(self):
         d = self.getAnalyzedData()
@@ -138,10 +141,13 @@ class Mesh:
         return translated
 
     def removeUnwantedMeshData(self):
-        self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
-        self.pymesh.apply_filter('meshing_remove_duplicate_faces')
-        self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
         self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+        self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
+        self.pymesh.apply_filter('meshing_close_holes', maxholesize=1000)
+        #self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
+        #self.pymesh.apply_filter('meshing_remove_duplicate_faces')
+        #self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
+
 
     def SaveMesh(self, file_path):
         #Create parent dir if it doesn't exist
@@ -162,40 +168,78 @@ class Mesh:
             outfile.writelines(processed)
     
     def remesh(self):
+        """i = 0
+        edge_length = 0.3
+        lowerbound = 0.7
+        upperbound = 1.3
         stats = self.getAnalyzedData()
-        i = 0
-        target_edge_length = 0.02
-        while(i < 5):
-            self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(target_edge_length), iterations=1, adaptive=True)
-            i+=1
-            stats=self.getAnalyzedData()
-        i = 0
-        stats = self.getAnalyzedData()
-        while(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000 and i < 2):
-            if(stats[data.AMOUNT_VERTICES.value] < targetVertices - 1000):
-                try:
-                    print("KANKERER")
-                    self.pymesh.apply_filter('meshing_surface_subdivision_midpoint', threshold=pml.Percentage(0), iterations=1)
-                except:
-                    print("FD")
-                    self.pymesh.apply_filter('meshing_repair_non_manifold_edges', method='Remove Faces')
-                    self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
 
-            elif(stats[data.AMOUNT_VERTICES.value] > targetVertices + 1000):
-                self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
+        while((stats[data.AMOUNT_VERTICES.value] < targetVertices * lowerbound or stats[data.AMOUNT_VERTICES.value] > targetVertices * upperbound) and i < 10):
+            print(stats[data.AMOUNT_VERTICES.value])
 
+            self.removeUnwantedMeshData()
+            if stats[data.AMOUNT_VERTICES.value] < targetVertices * lowerbound :
+                print("A")
+                self.pymesh.apply_filter('meshing_surface_subdivision_loop', threshold=pml.Percentage(0), iterations=1)
+                self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(0.9), iterations = 1)
+            elif stats[data.AMOUNT_VERTICES.value] > targetVertices * upperbound :
+                                self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= 0.97)
+
+                self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(90), iterations = 1)
+                edge_length += 0.03
             stats = self.getAnalyzedData()
             i += 1
-            print(i)
-
-        if(stats[data.AMOUNT_VERTICES.value] > targetVertices):
-           self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= targetVertices / stats[data.AMOUNT_VERTICES.value])
         
+        """ 
+        stats = self.getAnalyzedData()
+        i = 0
+        edge_length = 0.3
+        lowerbound = 0.7
+        upperbound = 1.5
+        while((stats[data.AMOUNT_VERTICES.value] < 3000 or stats[data.AMOUNT_VERTICES.value] > 14000) and i < 20):
+            print(stats[data.AMOUNT_VERTICES.value])
+
+            #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1)
+            if stats[data.AMOUNT_VERTICES.value] < 3000 :
+                try:
+                    self.pymesh.apply_filter('meshing_surface_subdivision_midpoint', threshold=pml.Percentage(0), iterations=1)
+                except:
+                    self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.AbsoluteValue(0.01), iterations = 1)
+            elif stats[data.AMOUNT_VERTICES.value] > 14000 :
+                #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1) 
+                try:
+                    self.pymesh.apply_filter('meshing_decimation_quadric_edge_collapse', targetperc= 0.95)
+                except:
+                    print("WEIRD STUFF")
+                edge_length += 0.03
+    
+            stats = self.getAnalyzedData()
+            i += 1
+        
+        try:
+            self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+        except:
+            print("Could not repair vertices fully")
+        try:
+            self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
+        except:
+            print("Could not repair edges fully")
+        try:
+            self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
+        except: 
+            print("Could not close holes fully")
+
+
+    
+
         #stats = self.getAnalyzedData()
-        #try:
-        #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=10)
-        #except:
-        #    print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+        #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(stats[data.AMOUNT_VERTICES.value]/targetVertices ), iterations=1)
+        
+        stats = self.getAnalyzedData()
+        try:
+            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
+        except:
+            print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
         
         print(self.mesh.vertex_number())
 
