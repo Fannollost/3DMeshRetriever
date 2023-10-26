@@ -14,6 +14,14 @@
 
 import numpy as np
 import pylab
+import matplotlib
+import matplotlib.pyplot as plt
+
+def getColor(classes):
+    cmap = plt.get_cmap('viridis')
+    colors = cmap(np.linspace(0, 1, len(classes)))
+    key_value_pairs = {classes[i]: colors[i] for i in range(len(colors))}
+    return key_value_pairs    
 
 
 def Hbeta(D=np.array([]), beta=1.0):

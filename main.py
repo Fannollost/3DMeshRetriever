@@ -3,11 +3,15 @@ import sys
 #import pymeshlab as pymesh
 from meshLoading import Mesh
 from renderer import Renderer
+from helper import discard_every_x_from_every_list, getEveryElementFromEveryList, get_1_from_list
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh, getFeatures
 from histogram import Graph
 import paths
-from tsne import tsne
+from tsne import tsne, getColor
+import pylab
+import mplcursors
+import numpy as np
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -103,7 +107,23 @@ def DistanceMatrix():
 #FOR VISUALIZATION USE:             python main.py tsne
 #------------------------------------------------------------------------------------
 def VisualizeFeatureSpace():
-    print("F") 
+    features = getFeatures()
+    allClasses = getEveryElementFromEveryList(0, features)
+    allModels = getEveryElementFromEveryList(1,features)
+    labels = []
+    for cIdx in range(len(allClasses)):
+        labels.append(allClasses[cIdx] + "-" + allModels[cIdx])
+
+    classes = get_1_from_list(allClasses)
+    colors = getColor(classes)
+    allColors = [ colors[c] for c in allClasses]
+    #colors = [allClassesfor color in colors] allClasses
+    features = discard_every_x_from_every_list(2, features)
+    Y = tsne(np.array(features),2,47,30)
+    f = pylab.scatter(Y[:, 0], Y[:, 1], 20,allColors)
+    cursor = mplcursors.cursor(f)
+    cursor.connect("add", lambda sel: sel.annotation.set_text(labels[sel.index]))
+    pylab.show()
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
