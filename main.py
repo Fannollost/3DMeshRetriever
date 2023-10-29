@@ -11,7 +11,9 @@ import paths
 from tsne import tsne, getColor
 import pylab
 import mplcursors
+from shapeDescriptors import weight
 import numpy as np
+from evaluation import Evaluation
 path = "db/"
 meshType = "Chess/"
 meshId = "D01017.obj"
@@ -94,7 +96,7 @@ def Feature(folder):
 #------------------------------------------------------------------------------------
 def QueryMesh(folder, mesh, nrOfResults):
     normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
-    paths = getDistanceToMesh(folder, mesh, nrOfResults)
+    getDistanceToMesh(folder, mesh, nrOfResults)
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
@@ -107,7 +109,7 @@ def DistanceMatrix():
 #FOR VISUALIZATION USE:             python main.py tsne
 #------------------------------------------------------------------------------------
 def VisualizeFeatureSpace():
-    features = getFeatures()
+    features, headers = getFeatures()
     allClasses = getEveryElementFromEveryList(0, features)
     allModels = getEveryElementFromEveryList(1,features)
     labels = []
@@ -119,11 +121,27 @@ def VisualizeFeatureSpace():
     allColors = [ colors[c] for c in allClasses]
     #colors = [allClassesfor color in colors] allClasses
     features = discard_every_x_from_every_list(2, features)
-    Y = tsne(np.array(features),2,47,30)
+    
+    headers = headers[2:]
+    weightedFeatures = []
+    for feat in features:
+        f = []
+        for head in range(len(headers[2:])):
+            h = headers[head] 
+            if(h[:2] == "A3" or h[:2] == "D1" or h[:2] == "D2" or h[:2] == "D3" or h[:2] == "D4"):
+                h = h[:2]
+            f.append(feat[head] * weight[h])
+        weightedFeatures.append(f)
+
+    Y = tsne(np.array(weightedFeatures),2,47,15)
     f = pylab.scatter(Y[:, 0], Y[:, 1], 20,allColors)
     cursor = mplcursors.cursor(f)
     cursor.connect("add", lambda sel: sel.annotation.set_text(labels[sel.index]))
     pylab.show()
+
+def EvaluateCBRS(k_nearest):
+    eval = Evaluation("featuresnormalised.csv")
+    eval.evaluateAccuracyOfDB(k_nearest)
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
@@ -189,6 +207,10 @@ def main():
         #FOR NORMALISE FEATURES USE:        python main.py query <folder> <file> <resultsWanted>
         if(sys.argv[1] == input.QUERY):
             QueryMesh(sys.argv[2], sys.argv[3], sys.argv[4])
+
+        if(sys.argv[1] == input.EVALUATE):
+            print("FF")
+            EvaluateCBRS(sys.argv[2])
 
     if(sys.argv[1] == input.GRAPH):
         Graph()

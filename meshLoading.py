@@ -224,10 +224,12 @@ class Mesh:
             self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
         except:
             print("Could not repair edges fully")
-        try:
-            self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
-        except: 
-            print("Could not close holes fully")
+        #try:
+        #    self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
+        #except: 
+        #    print("Could not close holes fully")
+        
+        #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1)
 
 
     
@@ -235,7 +237,7 @@ class Mesh:
         #stats = self.getAnalyzedData()
         #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(stats[data.AMOUNT_VERTICES.value]/targetVertices ), iterations=1)
         
-        stats = self.getAnalyzedData()
+        #stats = self.getAnalyzedData()
         try:
             self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
         except:

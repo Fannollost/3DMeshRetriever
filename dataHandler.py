@@ -42,7 +42,7 @@ def normaliseFeatures(featuresfile, toSave):
     df.to_csv(toSave, index=False)
 
 def getAllDistances():
-    DB = getFeatures()
+    DB, _ = getFeatures()
     
     distances = []
     for a in range(len(DB)):
@@ -59,7 +59,7 @@ def getAllDistances():
     return distances
 
 def getDistanceToMesh(folder, mesh, nrOfResults):
-    DB = getFeatures()
+    DB, _ = getFeatures()
     query_mesh_features = ""
     for a in range(len(DB)):
         obj_a = DB[a]
@@ -94,7 +94,7 @@ def getFeatures():
     df = pd.read_csv('featuresnormalised.csv')
     header = df.columns.tolist()
     data_array = df.to_numpy().tolist()
-    return data_array
+    return data_array, header
 
 def exportBasicData(normalised):
     if(normalised == 'normalised'):
