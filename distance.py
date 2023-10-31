@@ -1,5 +1,8 @@
 from shapeDescriptors import weight, histogramLimits
 import numpy as np
+from scipy.optimize import minimize
+from scipy.stats import wasserstein_distance
+from helper import discard_every_x_from_every_list
 
 def get_manhattan_distance(vec_a, vec_b, range_min, range_max, normalize=True):
     dist = 0
@@ -42,10 +45,20 @@ def getProperty(key):
         return "D4"
     else :
         return list(weight.keys())[key]
+    
 def get_cosine_distance(vec_a, vec_b, normalize=True):
+    vec_a = vec_a[2:]
+    vec_b = vec_b[2:]
     cosine_similarity = np.dot(vec_a, vec_b) / (np.linalg.norm(vec_a) * np.linalg.norm(vec_b))    
     dist = 1 - cosine_similarity
     if normalize:
         dist /= 2
     
     return dist
+
+def emd(v1,v2):
+    if len(v1) != len(v2):
+        raise ValueError("Not same lenght")
+    v1 = v1[2:]
+    v2 = v2[2:]
+    return wasserstein_distance(v1,v2)

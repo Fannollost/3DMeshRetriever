@@ -63,9 +63,10 @@ class Mesh:
     def normaliseMesh(self):
         self.removeUnwantedMeshData()
         self.getAnalyzedData()
-        self.normaliseNormals()
         self.normaliseVertices()
         self.remesh()
+        self.normaliseNormals()
+        self.normaliseVertices()
         print(self.mesh.vertex_number())
         d = self.getAnalyzedData()
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
@@ -204,6 +205,9 @@ class Mesh:
                 try:
                     self.pymesh.apply_filter('meshing_surface_subdivision_midpoint', threshold=pml.Percentage(0), iterations=1)
                 except:
+                    #self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
+                    #self.pymesh.apply_filter('meshing_repair_non_manifold_vertices')
+                    #print("KK")
                     self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.AbsoluteValue(0.01), iterations = 1)
             elif stats[data.AMOUNT_VERTICES.value] > 14000 :
                 #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1) 
@@ -224,24 +228,22 @@ class Mesh:
             self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
         except:
             print("Could not repair edges fully")
-        #try:
-        #    self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
-        #except: 
-        #    print("Could not close holes fully")
+        try:
+            self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
+        except: 
+            print("Could not close holes fully")
         
         #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1)
 
-
-    
 
         #stats = self.getAnalyzedData()
         #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(stats[data.AMOUNT_VERTICES.value]/targetVertices ), iterations=1)
         
         #stats = self.getAnalyzedData()
-        try:
-            self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
-        except:
-            print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+        #try:
+        #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
+        #except:
+        #    print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
         
         print(self.mesh.vertex_number())
 

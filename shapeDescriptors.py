@@ -27,8 +27,8 @@ histogramLimits =  { propertyDescriptorTypes.A3.value : 1, propertyDescriptorTyp
 
 weight = { globalShapeDescriptorTypes.SURFACE_AREA.value : 1, globalShapeDescriptorTypes.VOLUME.value: 1,
                      globalShapeDescriptorTypes.RECTANGULARITY.value : 1 , globalShapeDescriptorTypes.COMPACTNESS.value : 1,
-                     globalShapeDescriptorTypes.CONVEXITY.value: 60, globalShapeDescriptorTypes.ECCENTRICITY.value : 1,
-                     globalShapeDescriptorTypes.DIAMETER.value : 1, propertyDescriptorTypes.A3.value : 5, 
-                     propertyDescriptorTypes.D1.value : 5, propertyDescriptorTypes.D2.value : 10, 
-                     propertyDescriptorTypes.D3.value : 8 , propertyDescriptorTypes.D4.value: 100
+                     globalShapeDescriptorTypes.CONVEXITY.value: 1, globalShapeDescriptorTypes.ECCENTRICITY.value : 1,
+                     globalShapeDescriptorTypes.DIAMETER.value : 1, propertyDescriptorTypes.A3.value : 4, 
+                     propertyDescriptorTypes.D1.value : 4, propertyDescriptorTypes.D2.value : 4, 
+                     propertyDescriptorTypes.D3.value : 4 , propertyDescriptorTypes.D4.value: 4
         }

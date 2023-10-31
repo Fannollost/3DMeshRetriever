@@ -6,7 +6,7 @@ import pandas as pd
 from featureExtractor import FeatureExtractor
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from distance import get_cosine_distance, euclidianDist
+from distance import get_cosine_distance, euclidianDist, emd,get_manhattan_distance
 import paths
 from helper import flatten_list, get_all_files, get_immediate_subdirectories
 import heapq
@@ -72,7 +72,7 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
         obj_a = DB[a]
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
-        distance = euclidianDist(obj_a, query_mesh_features)
+        distance = get_cosine_distance(obj_a, query_mesh_features)
         name_a = obj_a[0] + "/" + obj_a[1]
         distances.append((name_a,distance))
     
