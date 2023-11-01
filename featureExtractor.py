@@ -28,7 +28,7 @@ class FeatureExtractor:
 
     def getFeatures(self):
         features = { globalDescriptors.SURFACE_AREA.value : self.getSurfaceArea(), globalDescriptors.VOLUME.value: self.getVolume(),
-                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBBVolume(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
+                     globalDescriptors.RECTANGULARITY.value : self.getVolume() / self.getOBB(), globalDescriptors.COMPACTNESS.value : self.getCompactness(),
                      globalDescriptors.CONVEXITY.value: self.getVolume() / self.getConvexHull(), globalDescriptors.ECCENTRICITY.value : self.getEccentric(),
                      globalDescriptors.DIAMETER.value : self.getDiameter()} 
         
@@ -60,7 +60,7 @@ class FeatureExtractor:
         return features
 
     def getA3(self, samples):
-        vertices = self.mesh.vertex_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randint(0,len(vertices) - 1)
@@ -80,7 +80,7 @@ class FeatureExtractor:
         return self.normalise(yAxis, binEdges)
     
     def getD1(self, samples):
-        vertices = self.mesh.vertex_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randint(0, len(vertices) - 1)
@@ -90,7 +90,7 @@ class FeatureExtractor:
         return self.normalise(yAxis,binEdges)
     
     def getD2(self,samples):
-        vertices = self.mesh.vertex_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randint(0,len(vertices) - 1)
@@ -104,7 +104,7 @@ class FeatureExtractor:
         return self.normalise(yAxis,binEdges)
 
     def getD3(self,samples): 
-        vertices = self.mesh.vertex_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randint(0,len(vertices) - 1)
@@ -117,13 +117,13 @@ class FeatureExtractor:
                     kdx = random.randint(0,len(vertices) - 1)
                     vertex2 = vertices[kdx]
                     if kdx == jdx or kdx == idx: continue
-                    area = areaTriangle(vertex0,vertex1,vertex2)
+                    area = areaTriangle(vertex0,vertex1,vertex2) ** 0.5
                     allSamples.append(area)
         yAxis, binEdges = np.histogram(allSamples, range =  (0, histogramLimits[propertyDescriptors.D3.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
     
     def getD4(self, samples):
-        vertices = self.mesh.vertex_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
         for i in range(samples):
             idx = random.randint(0,len(vertices) - 1)
@@ -160,8 +160,8 @@ class FeatureExtractor:
         return compactness
     
     def getSurfaceArea(self):
-        vertices = self.mesh.vertex_matrix()
-        faces = self.mesh.face_matrix()
+        vertices = self.pymesh.mesh(0).vertex_matrix()
+        faces = self.pymesh.mesh(0).face_matrix()
         totArea = 0
         for f in faces:
             totArea += areaTriangle(vertices[f[0]],vertices[f[1]],vertices[f[2]])
@@ -214,7 +214,7 @@ class FeatureExtractor:
 
         cov = np.cov(V)
         eig, vec = np.linalg.eig(cov)
-        return abs(np.max(eig)) / abs(np.min(eig))
+        return np.max(eig) / np.min(eig)
     
     def getOBB(self):
         show_aabb = True
@@ -246,10 +246,10 @@ class FeatureExtractor:
         to_draw = [mesh]
         to_draw.append(aabb_lineset) if show_aabb else print("Not showing Axis-Aligned Bounding Box")
         to_draw.append(obb_lineset) if show_obb else print("Not showing Oriented Bounding Box")
-        open3d.visualization.draw_geometries(
-            to_draw,
-            width=1280,
-            height=720,
-            mesh_show_wireframe=True
-        )
+        #open3d.visualization.draw_geometries(
+        #    to_draw,
+        #    width=1280,
+        #    height=720,
+        #    mesh_show_wireframe=True
+        #)
         return obb.volume()

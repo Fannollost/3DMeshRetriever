@@ -13,12 +13,16 @@ class Graph():
 
         # Compute histogram
         counts, bins = np.histogram(db_data, bins=no_bins)
+        #counts, bins = np.histogram(db_data, bins=no_bins, range=[8000,12000])
+        #print(counts)
+        #print(bins)
 
         # Plot histogram
         fig, ax = plt.subplots()
-        ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
-        #ax.hist(bins[:-1], weights=counts, range=[0, 12000])
-        ax.set_title(title)
+        ax.hist(bins[:-1], bins=no_bins, weights=counts)
+        #ax.hist(bins[:-1], weights=counts, range=[-0.1, 2])
+        #ax.hist(bins[:-1], bins, weights=counts, range=[0, 12000])
+        ax.set_title(title + ' - New database')
         ax.set_ylabel("Number of samples per bin")
         ax.set_xlabel(data)
 
@@ -45,9 +49,10 @@ class Graph():
 
     def getlinePlot(self, data, title):
         df1 = pd.read_csv('basicdata.csv')
+        df1 = pd.read_csv('normalisedDBData.csv')
+
         data_1 = df1[data]
-        df2 = pd.read_csv('normalisedDBData.csv')
-        data_2 = df2[data]
+        #data_2 = df2[data]
         #plt.plot(data_1)
         plt.plot(data_1, label=title)
         plt.xlabel("Model nr.")

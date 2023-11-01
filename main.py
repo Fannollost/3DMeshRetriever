@@ -90,25 +90,28 @@ def Feature(folder):
         features = getFolderFeatures(folder)
     print(features)
     dataExporter(paths.featuresCSV, features)
-    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
 
 
 #------------------------------------------------------------------------------------
 #FOR NORMALISE FEATURES USE:        python main.py query <folder> <object>  
 #------------------------------------------------------------------------------------
 def QueryMesh(folder, mesh, nrOfResults):
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getDistanceToMesh(folder, mesh, nrOfResults)
 
 #------------------------------------------------------------------------------------
 #FOR DISTANCE MATRIX USE:           python main.py distance
 #------------------------------------------------------------------------------------
 def DistanceMatrix():
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     getAllDistances()
 
 #------------------------------------------------------------------------------------
 #FOR VISUALIZATION USE:             python main.py tsne
 #------------------------------------------------------------------------------------
 def VisualizeFeatureSpace():
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     features, headers = getFeatures()
     allClasses = getEveryElementFromEveryList(0, features)
     allModels = getEveryElementFromEveryList(1,features)
@@ -140,13 +143,14 @@ def VisualizeFeatureSpace():
     pylab.show()
 
 def EvaluateCBRS(k_nearest):
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     eval = Evaluation("featuresnormalised.csv")
     eval.evaluateAccuracyOfDB(k_nearest)
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
 #------------------------------------------------------------------------------------
-def Graph():
+def Graphs():
     h = Graph()
     #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
     # h.getHisto(paths.normalisedDBCSV,'Barycenter distance to origin', 'normalised data')
@@ -155,14 +159,15 @@ def Graph():
     #h.getHisto('basicdata.csv', 'Amount of Faces', 'Amount of Faces')
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
-    #h.getHisto(paths.normalisedDBCSV, 'Amount of Faces', 'Amount of Faces')
-    h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
+    #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
+    #h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
     #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
-    
-    h.showPlots()
-    h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
+    print("KANKER")
+    h.getlinePlot('Amount of Vertices', 'amount of vertices')
     h.showPlots()
+    #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
+    #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
 
 def main():
     args = sys.argv
@@ -174,6 +179,9 @@ def main():
     #FOR VISUALIZATION USE:             python main.py tsne
     if(sys.argv[1] == input.TSNE):
         VisualizeFeatureSpace()
+
+    if(sys.argv[1] == input.GRAPH):
+        Graphs()
 
     if(len(sys.argv) == 3 or len(sys.argv) == 4 or len(sys.argv) == 5 or len(sys.argv)==6):
         # TO RENDER, USE:                   python main.py render path_file
@@ -192,7 +200,7 @@ def main():
         # TO EXPORT DATA, USE:              python main.py export basicdata
         # TO EXPORT NORMALISED DATA, USE:   python main.py export basicdata normalised
         if(sys.argv[1] == input.EXPORT):
-            Export(sys.arv[2])
+            Export(sys.argv[2])
 
         #FOR FEATURES, USE:                 python main.py features <folder> 
         #FOR ALL FEATURES, USE:             python main.py features <database> all
@@ -211,9 +219,6 @@ def main():
         if(sys.argv[1] == input.EVALUATE):
             print("FF")
             EvaluateCBRS(sys.argv[2])
-
-    if(sys.argv[1] == input.GRAPH):
-        Graph()
 
 main()
         

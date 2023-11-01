@@ -70,9 +70,13 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
     distances = []
     for a in range(len(DB)):
         obj_a = DB[a]
+        print(obj_a[0].lower() + "/" + obj_a[1].lower())
+
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
-        distance = get_cosine_distance(obj_a, query_mesh_features)
+        distance = euclidianDist(obj_a, query_mesh_features)
+        if(obj_a[0].lower() + "/" + obj_a[1].lower() == "aircraftbuoyant/m1338.obj"):
+            print(distance)
         name_a = obj_a[0] + "/" + obj_a[1]
         distances.append((name_a,distance))
     
@@ -92,6 +96,7 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
 
 def getFeatures():
     df = pd.read_csv('featuresnormalised.csv')
+    print(df)
     header = df.columns.tolist()
     data_array = df.to_numpy().tolist()
     return data_array, header

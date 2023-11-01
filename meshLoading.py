@@ -122,6 +122,10 @@ class Mesh:
     def alignAxises(self):
         meshData = self.getAnalyzedData()
         eigenVectors = meshData[data.EIGEN_VECTORS.value]
+        eigenValues = meshData[data.EIGEN_VALUE.value]
+        eigenValueOrder = np.argsort(eigenValues)[::-1]
+        eigenValues = eigenValues[eigenValueOrder]
+        eigenVectors = [eigenVectors[col] for col in eigenValueOrder.T]
         for vector in eigenVectors:
             vector[0] = vector[0]/mathHelper.length(vector)
             vector[1] = vector[1]/mathHelper.length(vector)
@@ -228,22 +232,26 @@ class Mesh:
             self.pymesh.apply_filter('meshing_repair_non_manifold_edges')
         except:
             print("Could not repair edges fully")
+
         try:
             self.pymesh.apply_filter('meshing_close_holes', maxholesize=300)
         except: 
             print("Could not close holes fully")
-        
+        self.pymesh.meshing_isotropic_explicit_remeshing(iterations = 1)
+#m740
+        #try:
+        #    self.pymesh.apply_filter('compute_selection_from_mesh_border')
+        #except:
+        #    print("UHOH")
+#
+
         #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen = pml.Percentage(100), iterations = 1)
 
 
         #stats = self.getAnalyzedData()
         #self.pymesh.meshing_isotropic_explicit_remeshing(targetlen=pml.AbsoluteValue(stats[data.AMOUNT_VERTICES.value]/targetVertices ), iterations=1)
         
-        #stats = self.getAnalyzedData()
-        #try:
-        #    self.pymesh.apply_filter('apply_coord_laplacian_smoothing', stepsmoothnum=5)
-        #except:
-        #    print(os.path.realpath(self.meshPath) + " - ERROR : Failed to apply filter:  'apply_coord_laplacian_smoothing.")
+
         
         print(self.mesh.vertex_number())
 

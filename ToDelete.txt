@@ -5,9 +5,12 @@ db/bookset/D01009.obj
 db/bookset/D01030.obj
 db/bookset/D01050.obj
 db/bookset/D01096.obj
+db/Bookset/D01065.obj
 db/bookset/D01109.obj
+db/Bookset/D01078.obj
 db/BuildingNonResidential/m404.obj
 db/BuildingNonResidential/m470.obj
+==
 db/Cellphone/D00554.obj
 db/city/m1664.obj
 db/computerkeyboard/D00116.obj
@@ -16,7 +19,9 @@ db/computerkeyboard/D00278.obj
 db/computerkeyboard/D00654.obj
 db/computerkeyboard/D00569.obj
 db/computerkeyboard/D00673.obj
+db/computerkeyboard/D00692.obj
 db/desklamp/D00330.obj
+==
 db/desklamp/D00797.obj
 db/deskphone/D00154.obj
 db/deskphone/D00957.obj
@@ -26,6 +31,10 @@ db/drum/D00551.obj
 db/floorlamp/D00400.obj
 db/glasses/D00640.obj
 db/gun/m660.obj
+db/gun/m684.obj
+db/Humanhead/D00566.obj
+db/Humanhead/D00758.obj
+==
 db/Insect/D00787.obj
 db/Insect/m9.obj
 db/Knife/D01075.obj
@@ -36,6 +45,7 @@ db/Knife/D01160.obj
 db/MilitaryVehicle/D00334.obj
 db/MilitaryVehicle/D00723.obj
 db/plantindoors/D00128.obj
+==
 db/plantindoors/D00595.obj
 db/plantindoors/m1033.obj
 db/plantindoors/D00624.obj
@@ -46,9 +56,14 @@ db/RectangleTable/D00317.obj
 db/RectangleTable/D00766.obj
 db/RectangleTable/D00418.obj
 db/Ship/D00907.obj
+==
+db/Spoon/D00683.obj
+db/Spoon/D00562.obj
 db/Skyscraper/D00059.obj
 db/Starship/m1381.obj
 db/sword/D00066.obj
 db/train/D01031.obj
+db/train/D01008.obj
 db/Violin/D00349.obj
+db/Violin/D00602.obj
 Done untill fish
