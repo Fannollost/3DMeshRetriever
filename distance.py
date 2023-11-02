@@ -30,6 +30,8 @@ def euclidianDist(f1, f2):
             featureDist = (weight[ka] / max_weight) * abs(f1[key] - f2[key]) ** 2
             tot_weight += weight[ka] / max_weight
             sumDist += featureDist
+    
+    print(tot_weight)
     return sumDist**0.5
 
 def getProperty(key):

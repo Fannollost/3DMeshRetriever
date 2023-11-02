@@ -222,7 +222,7 @@ class Mesh:
                 except:
                     print("WEIRD STUFF")
                 edge_length += 0.03
-    
+            self.normaliseVertices()
             stats = self.getAnalyzedData()
             i += 1
         

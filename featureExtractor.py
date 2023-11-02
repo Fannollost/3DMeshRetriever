@@ -178,7 +178,7 @@ class FeatureExtractor:
 
 
         volume = np.abs(volume)
-        return volume#
+        return volume
     
     def getConvexHull(self):
         vertices = self.mesh.vertex_matrix()

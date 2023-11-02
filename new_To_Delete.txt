@@ -1,0 +1,3 @@
+db/HumanHead/d00566.obj
+db/Violin/d00602.obj
+db/shelf/m858.obj

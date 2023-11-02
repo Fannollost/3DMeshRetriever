@@ -23,12 +23,13 @@ class propertyDescriptorTypes(Enum):
     D3 = "D3"
     D4 = "D4"
 
-histogramLimits =  { propertyDescriptorTypes.A3.value : 1, propertyDescriptorTypes.D1.value : 1, propertyDescriptorTypes.D2.value : 1, propertyDescriptorTypes.D3.value : 1 , propertyDescriptorTypes.D4.value:1}
+histogramLimits =  { propertyDescriptorTypes.A3.value : pi, propertyDescriptorTypes.D1.value : 3**(1/2)/2, propertyDescriptorTypes.D2.value : 3**(1/2),
+                     propertyDescriptorTypes.D3.value : (3/4)**(1/2), propertyDescriptorTypes.D4.value : (1/6)**(1/3) }
 
-weight = { globalShapeDescriptorTypes.SURFACE_AREA.value : 1, globalShapeDescriptorTypes.VOLUME.value: 1,
-                     globalShapeDescriptorTypes.RECTANGULARITY.value : 1 , globalShapeDescriptorTypes.COMPACTNESS.value : 1,
-                     globalShapeDescriptorTypes.CONVEXITY.value: 1, globalShapeDescriptorTypes.ECCENTRICITY.value : 1,
-                     globalShapeDescriptorTypes.DIAMETER.value : 1, propertyDescriptorTypes.A3.value : 8, 
-                     propertyDescriptorTypes.D1.value : 8, propertyDescriptorTypes.D2.value : 8, 
-                     propertyDescriptorTypes.D3.value : 8 , propertyDescriptorTypes.D4.value: 8
+weight = { globalShapeDescriptorTypes.SURFACE_AREA.value : 15, globalShapeDescriptorTypes.VOLUME.value: 10,
+                     globalShapeDescriptorTypes.RECTANGULARITY.value : 10 , globalShapeDescriptorTypes.COMPACTNESS.value : 7,
+                     globalShapeDescriptorTypes.CONVEXITY.value: 12, globalShapeDescriptorTypes.ECCENTRICITY.value : 12,
+                     globalShapeDescriptorTypes.DIAMETER.value : 10, propertyDescriptorTypes.A3.value : 80, 
+                     propertyDescriptorTypes.D1.value : 80, propertyDescriptorTypes.D2.value : 80, 
+                     propertyDescriptorTypes.D3.value : 80, propertyDescriptorTypes.D4.value: 80
         }
