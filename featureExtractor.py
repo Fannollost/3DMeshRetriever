@@ -35,15 +35,15 @@ class FeatureExtractor:
         samples = 100000
 
         if SapeProperties:
-            A3 = self.getA3(int(samples ** (1/3))+ 1) 
+            A3 = self.getA3(10000) 
             print("done with A3")
             D1 = self.getD1(samples)
             print("done with D1")
-            D2 = self.getD2(int(samples ** (1/2))+ 1)
+            D2 = self.getD2(samples)
             print("done with D2")
-            D3 = self.getD3(int(samples ** (1/3))+ 1)
+            D3 = self.getD3(10000)
             print("done with D3")
-            D4 = self.getD4(int(samples ** (1/4))+ 1)
+            D4 = self.getD4(10000)
             print("done with D4")
 
             for i in range(len(A3[0])):
@@ -62,19 +62,13 @@ class FeatureExtractor:
     def getA3(self, samples):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
+
         for i in range(samples):
-            idx = random.randint(0,len(vertices) - 1)
-            vertex0 = vertices[idx]
-            for j in range(samples):
-                jdx = random.randint(0,len(vertices) - 1)
-                vertex1 = vertices[jdx]
-                if idx == jdx: 
-                    continue
-                for k in range(samples):
-                    kdx = random.randint(0,len(vertices) - 1)
-                    vertex2 = vertices[kdx]  
-                    if kdx == jdx or kdx == jdx: continue
-                    allSamples.append(angleBetween(vector(vertex0,vertex1), vector(vertex0,vertex2)))
+            points = random.sample(range(0,len(vertices)), 3)
+            v0 = vertices[points[0]]
+            v1 = vertices[points[1]]
+            v2 = vertices[points[2]]
+            allSamples.append(angleBetween(vector(v0,v1), vector(v0,v2)))
 
         yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.A3.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
@@ -92,57 +86,42 @@ class FeatureExtractor:
     def getD2(self,samples):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
+
         for i in range(samples):
-            idx = random.randint(0,len(vertices) - 1)
-            vertex0 = vertices[idx]
-            for j in range(samples):
-                jdx = random.randint(0,len(vertices) - 1)
-                vertex1 = vertices[jdx]
-                if jdx == idx: continue
-                allSamples.append(dist(vertex0, vertex1))
+            points = random.sample(range(0,len(vertices)),2)
+            v0 = vertices[points[0]]
+            v1 = vertices[points[1]]
+            allSamples.append(dist(v0, v1))
+
         yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D2.value]), bins=8)
         return self.normalise(yAxis,binEdges)
 
     def getD3(self,samples): 
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
+
         for i in range(samples):
-            idx = random.randint(0,len(vertices) - 1)
-            vertex0 = vertices[idx]
-            for j in range(samples):
-                jdx = random.randint(0,len(vertices) - 1)
-                vertex1 = vertices[jdx]
-                if jdx == idx : continue
-                for k in range(samples):
-                    kdx = random.randint(0,len(vertices) - 1)
-                    vertex2 = vertices[kdx]
-                    if kdx == jdx or kdx == idx: continue
-                    area = areaTriangle(vertex0,vertex1,vertex2) ** 0.5
-                    allSamples.append(area)
+            points = random.sample(range(0,len(vertices)), 3)
+            v0 = vertices[points[0]]
+            v1 = vertices[points[1]]
+            v2 = vertices[points[2]]
+            allSamples.append(areaTriangle(v0,v1,v2) ** 0.5)
+
         yAxis, binEdges = np.histogram(allSamples, range =  (0, histogramLimits[propertyDescriptors.D3.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
     
     def getD4(self, samples):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
+
         for i in range(samples):
-            idx = random.randint(0,len(vertices) - 1)
-            vertex0 = vertices[idx]
-            for j in range(samples):
-                jdx = random.randint(0,len(vertices) - 1)
-                vertex1 = vertices[jdx]
-                if jdx == idx : continue
-                for k in range(samples):
-                    kdx = random.randint(0,len(vertices) - 1)
-                    vertex2 = vertices[kdx]
-                    if kdx == jdx or kdx == idx: continue
-                    for l in range(samples):
-                        ldx = random.randint(0,len(vertices) - 1)
-                        vertex3 = vertices[ldx]
-                        if ldx == kdx or ldx == jdx or ldx == idx: continue
-                        volume = volumeTetrahydron(vector(vertex0,vertex1), vector(vertex0,vertex2), vector(vertex0,vertex3))
-                        #print(volume)
-                        allSamples.append(volume)
+            points = random.sample(range(0,len(vertices)), 4)
+            v0 = vertices[points[0]]
+            v1 = vertices[points[1]]
+            v2 = vertices[points[2]]
+            v3 = vertices[points[3]]
+            allSamples.append(volumeTetrahydron(vector(v0,v1), vector(v0,v2), vector(v0,v3)))
+
         yAxis, binEdges = np.histogram(allSamples, range=(0, histogramLimits[propertyDescriptors.D4.value]), bins = 8)
         return self.normalise(yAxis, binEdges)
 
@@ -162,6 +141,7 @@ class FeatureExtractor:
     def getSurfaceArea(self):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         faces = self.pymesh.mesh(0).face_matrix()
+        print(faces)
         totArea = 0
         for f in faces:
             totArea += areaTriangle(vertices[f[0]],vertices[f[1]],vertices[f[2]])
@@ -214,6 +194,7 @@ class FeatureExtractor:
 
         cov = np.cov(V)
         eig, vec = np.linalg.eig(cov)
+        print(np.max(eig) / np.min(eig))
         return np.max(eig) / np.min(eig)
     
     def getOBB(self):

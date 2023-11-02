@@ -65,8 +65,8 @@ class Mesh:
         self.getAnalyzedData()
         self.normaliseVertices()
         self.remesh()
-        self.normaliseNormals()
         self.normaliseVertices()
+        self.normaliseNormals()
         print(self.mesh.vertex_number())
         d = self.getAnalyzedData()
         self.SaveMesh('normalisedDB/' + d[data.CLASS.value] + '/' + str(self.fileName))
@@ -82,6 +82,7 @@ class Mesh:
                                                      axisz = -1 * d[data.BARY_CENTER.value][2])
         self.alignAxises()
         self.flipMesh()
+        d = self.getAnalyzedData()
         self.pymesh.compute_matrix_from_scaling_or_normalization(axisx=1 / d[data.MAX_SIZE.value], customcenter=d[data.BARY_CENTER.value], uniformflag=True)
         d = self.getAnalyzedData()
 
@@ -151,6 +152,7 @@ class Mesh:
         self.pymesh.apply_filter('meshing_close_holes', maxholesize=1000)
         #self.pymesh.apply_filter('meshing_remove_duplicate_vertices')
         #self.pymesh.apply_filter('meshing_remove_duplicate_faces')
+        
         #self.pymesh.apply_filter('meshing_remove_unreferenced_vertices')
 
 

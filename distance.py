@@ -23,8 +23,8 @@ def euclidianDist(f1, f2):
         k = ka[:2]
         key = key + 2
         if k=="A3" or k=="D1" or k=="D2" or k=="D3" or k=="D4":
-            featureDist = (weight[k] / (max_weight * histogramLimits[k])) * abs(f1[key] - f2[key]) ** 2
-            tot_weight += weight[k] / (max_weight * histogramLimits[k])
+            featureDist = (weight[k] / (max_weight * weight[k])) * abs(f1[key] - f2[key]) ** 2
+            tot_weight += weight[k] / (max_weight * weight[k])
             sumDist += featureDist
         elif ka not in ['File', 'Class'] :
             featureDist = (weight[ka] / max_weight) * abs(f1[key] - f2[key]) ** 2

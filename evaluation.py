@@ -7,9 +7,12 @@ class Evaluation:
     def __init__(self,path):
         self.df = pd.read_csv(path)
     
-    def evaluateAccuracyOfDB(self, numberOfResults):
+    def evaluateAccuracyOfDB(self, numberOfResults, classToEvaluate="all"):
         resultsArray = {}
         for i, row in self.df.iterrows():
+            if(classToEvaluate != "all"):
+                if(classToEvaluate != row["Class"]):
+                    continue
             distances = getDistanceToMesh(row["Class"], row["File"],numberOfResults)
             resultsArray[row["Class"] + "/" + row["File"]] = distances
 

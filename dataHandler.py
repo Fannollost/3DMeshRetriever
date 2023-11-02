@@ -52,7 +52,8 @@ def getAllDistances():
             distance = euclidianDist(obj_a, obj_b)
             name_a = obj_a[0] + "/" + obj_a[1]
             name_b = obj_b[0] + "/" + obj_b[1]
-            distances.append((name_a,name_b,distance))
+            distances[name_a, name_b] = distance
+            #distances.append((name_a,name_b,distance))
         
     print(distances)
     makeCSVfromArray(distances, 'distancematrix.csv')

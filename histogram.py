@@ -48,8 +48,9 @@ class Graph():
         bp = ax.boxplot(data)
 
     def getlinePlot(self, data, title):
-        df1 = pd.read_csv('basicdata.csv')
-        df1 = pd.read_csv('normalisedDBData.csv')
+        #df1 = pd.read_csv('basicdata.csv')
+        df1 = pd.read_csv('features.csv')
+        #df1 = pd.read_csv('normalisedDBdata.csv')
 
         data_1 = df1[data]
         #data_2 = df2[data]
