@@ -3,7 +3,7 @@ from tkinter import filedialog
 import os.path
 from pathlib import Path
 from renderer import display_mesh_list
-from dataHandler import getDistanceToMesh
+from dataHandler import getDistanceToMesh, getKNNDistanceToMesh
 
 class MainApplication:
     def __init__(self, root):
@@ -119,7 +119,7 @@ class QueryWindow:
             file = Path(self.selected_files[0])
             basepath, fileName = os.path.split(file)
             basepath, className = os.path.split(basepath)
-            filepaths = getDistanceToMesh(className, fileName, self.spinbox.get())
+            filepaths = getKNNDistanceToMesh(className, fileName, self.spinbox.get())
             paths = []
             for path in filepaths:
                 paths.append(basepath + "/"+ path)
