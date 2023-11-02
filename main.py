@@ -146,7 +146,7 @@ def EvaluateCBRS(k_nearest):
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs
 #------------------------------------------------------------------------------------
-def Graph():
+def Graphs():
     h = Graph()
     #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
     # h.getHisto(paths.normalisedDBCSV,'Barycenter distance to origin', 'normalised data')
@@ -156,12 +156,13 @@ def Graph():
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Faces', 'Amount of Faces')
-    h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
+    #h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
     #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
-    
-    h.showPlots()
-    h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
+    h.getLinePlotDescriptors('featuresnormalised.csv')
+    #h.showPlots()
+    #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
+    #h.getlinePlot("Barycenter distance to origin", "Barycenter distance to origin")
     h.showPlots()
 
 def main():
@@ -213,7 +214,7 @@ def main():
             EvaluateCBRS(sys.argv[2])
 
     if(sys.argv[1] == input.GRAPH):
-        Graph()
+        Graphs()
 
 main()
         
