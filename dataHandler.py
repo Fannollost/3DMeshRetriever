@@ -11,7 +11,6 @@ import paths
 from helper import flatten_list, get_all_files, get_immediate_subdirectories
 import heapq
 import scipy as sp
-import knn
 
 class dataExporter:
 
