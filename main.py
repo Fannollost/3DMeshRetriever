@@ -152,6 +152,8 @@ def EvaluateCBRS(k_nearest):
 #------------------------------------------------------------------------------------
 def Graphs():
     h = Graph()
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+
     #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
     # h.getHisto(paths.normalisedDBCSV,'Barycenter distance to origin', 'normalised data')
     #h.getBoxplot('Barycenter distance to origin', 'Barycenter distance')
@@ -160,13 +162,14 @@ def Graphs():
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Faces', 'Amount of Faces')
-    h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
+    #h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
     #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
-    
-    h.showPlots()
-    h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
+    #h.get
+    #h.showPlots()
+    #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot("Barycenter distance to origin", "Barycenter distance to origin")
+    h.getLinePlotDescriptors("featuresnormalised.csv")
     h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')

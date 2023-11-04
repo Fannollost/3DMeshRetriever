@@ -10,15 +10,16 @@ no_bins = 30
 
 DescriptorName = ['A3', 'D1', 'D2', 'D3', 'D4']
 
-DescriptorList = [
-    ['A3_0','A3_1','A3_2','A3_3','A3_4','A3_5','A3_6','A3_7'],
-    ['D1_0','D1_1','D1_2','D1_3','D1_4','D1_5','D1_6','D1_7'],
-    ['D2_0','D2_1','D2_2','D2_3','D2_4','D2_5','D2_6','D2_7'],
-    ['D3_0','D3_1','D3_2','D3_3','D3_4','D3_5','D3_6','D3_7'],
-    ['D4_0','D4_1','D4_2','D4_3','D4_4','D4_5','D4_6','D4_7']
-]
-
 class Graph():
+    def getDescriptorList(self):
+        descriptors = []
+        for j in ['A3','D1','D2','D3','D4']:
+            descriptor = []
+            for i in range(30):
+                descriptor.append(j + "_" + str(i))
+            descriptors.append(descriptor)
+        return descriptors
+
     def getHisto(self, csv, data, title):
         df = pd.read_csv(csv)
         db_data = df[data]
@@ -42,8 +43,9 @@ class Graph():
         df = pd.read_csv(csv)
         #print(len(df['Class'].unique()))
         height = 2
-        width = 4
-
+        width = 2
+        DescriptorList = self.getDescriptorList()
+        #print(DescriptorList)
         for i in range(0, len(DescriptorList)):
             # Create subplots
             figure, axis = plt.subplots(height,width)
@@ -60,7 +62,7 @@ class Graph():
                 currentData = classData[descriptorColumns].T
 
                 # Get the coordinates of the subplot and put the data in it
-                x = int(count / width)
+                x = int((count / width) - 1)
                 y = count % width
                 axis[x,y].plot(currentData, label=className)
                 axis[x,y].set_title(currentName + ' descriptor - ' + className)
