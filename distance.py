@@ -30,20 +30,18 @@ def euclidianDist(f1, f2):
             featureDist = (weight[ka] / max_weight) * abs(f1[key] - f2[key]) ** 2
             tot_weight += weight[ka] / max_weight
             sumDist += featureDist
-    
-    print(tot_weight)
     return sumDist**0.5
 
 def getProperty(key):
-    if(key >= 12 and key < 20):
+    if(key >= 7 and key < 37):
         return "A3"
-    elif(key >= 20 and key < 28):
+    elif(key >= 37 and key < 67):
         return "D1"
-    elif(key >= 28 and key < 36):
+    elif(key >= 67 and key < 97):
         return "D2"
-    elif(key >= 36 and key < 44):
+    elif(key >= 97 and key < 127):
         return "D3"
-    elif(key >= 44 and key < 52):
+    elif(key >= 127 and key < 157):
         return "D4"
     else :
         return list(weight.keys())[key]

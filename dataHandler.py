@@ -22,6 +22,9 @@ class dataExporter:
         for d in range(len(data)):
             self.writer.writerow(data[d].values())
 
+def exportEvaluation(evaluation):
+    makeCSVfromArray(evaluation, 'evaluation.csv')
+
 def normaliseFeatures(featuresfile, toSave):
     df = pd.read_csv(featuresfile)
     columns = df.columns
@@ -80,6 +83,7 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
         distance = euclidianDist(obj_a, query_mesh_features)
 
         name_a = obj_a[0] + "/" + obj_a[1]
+        print((name_a,str(distance)))
         distances.append((name_a,distance))
     
     sorted_result = sorted(distances,key=lambda couple:couple[1])
@@ -226,5 +230,5 @@ def normalizeFolder(folderName, db):
     return folderData
                 
 def makeCSVfromArray(array, filename):
-    df = pd.DataFrame(array, array[0].keys())
+    df = pd.DataFrame(array)
     df.to_csv(filename,mode="w")

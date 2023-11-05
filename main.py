@@ -5,7 +5,7 @@ from meshLoading import Mesh
 from renderer import Renderer
 from helper import discard_every_x_from_every_list, getEveryElementFromEveryList, get_1_from_list
 import inputArguments as input
-from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh, getFeatures
+from dataHandler import dataExporter, exportBasicData, normalizeFolder, normalizeDB, getAllFeatures, getFolderFeatures,normaliseFeatures, getAllDistances, getDistanceToMesh, getFeatures, exportEvaluation
 from histogram import Graph
 import paths
 from tsne import tsne, getColor
@@ -135,17 +135,21 @@ def VisualizeFeatureSpace():
                 h = h[:2]
             f.append(feat[head] * weight[h])
         weightedFeatures.append(f)
-        
-    Y = tsne(np.array(weightedFeatures),2,47,15)
-    f = pylab.scatter(Y[:, 0], Y[:, 1], 20,allColors)
+    Y = tsne(np.array(weightedFeatures),2,159,45)
+    f = pylab.scatter(Y[:, 0], Y[:, 1], 5, allColors)
     cursor = mplcursors.cursor(f)
     cursor.connect("add", lambda sel: sel.annotation.set_text(labels[sel.index]))
     pylab.show()
 
 def EvaluateCBRS(k_nearest):
-    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     eval = Evaluation("featuresnormalised.csv")
-    eval.evaluateAccuracyOfDB(k_nearest)
+    evaluation = eval.evaluateAccuracyOfDB(k_nearest)
+    evaluation = eval.getStatsPerClass(evaluation)
+    stats = eval.getOverallStats(evaluation)
+    print(stats)
+    exportEvaluation(evaluation)
+ 
 
 #------------------------------------------------------------------------------------
 #FOR GRAPHS, USE:                   python main.py graphs

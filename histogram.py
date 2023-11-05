@@ -42,8 +42,8 @@ class Graph():
     def getLinePlotDescriptors(self, csv):
         df = pd.read_csv(csv)
         #print(len(df['Class'].unique()))
-        height = 2
-        width = 2
+        height = 8
+        width = 9
         DescriptorList = self.getDescriptorList()
         #print(DescriptorList)
         for i in range(0, len(DescriptorList)):
