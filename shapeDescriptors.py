@@ -26,10 +26,10 @@ class propertyDescriptorTypes(Enum):
 histogramLimits =  { propertyDescriptorTypes.A3.value : pi, propertyDescriptorTypes.D1.value : 3**(1/2)/2, propertyDescriptorTypes.D2.value : 3**(1/2),
                      propertyDescriptorTypes.D3.value : (3/4)**(1/2), propertyDescriptorTypes.D4.value : (1/6)**(1/3) }
 
-weight = { globalShapeDescriptorTypes.SURFACE_AREA.value : 15, globalShapeDescriptorTypes.VOLUME.value: 10,
-                     globalShapeDescriptorTypes.RECTANGULARITY.value : 10 , globalShapeDescriptorTypes.COMPACTNESS.value : 7,
-                     globalShapeDescriptorTypes.CONVEXITY.value: 14, globalShapeDescriptorTypes.ECCENTRICITY.value : 12,
-                     globalShapeDescriptorTypes.DIAMETER.value : 50, propertyDescriptorTypes.A3.value : 300, 
-                     propertyDescriptorTypes.D1.value : 5, propertyDescriptorTypes.D2.value : 400, 
-                     propertyDescriptorTypes.D3.value : 300, propertyDescriptorTypes.D4.value: 600
+weight = { globalShapeDescriptorTypes.SURFACE_AREA.value : 7.48, globalShapeDescriptorTypes.VOLUME.value: 7.74,
+                     globalShapeDescriptorTypes.RECTANGULARITY.value : 7.05 , globalShapeDescriptorTypes.COMPACTNESS.value : 5.90,
+                     globalShapeDescriptorTypes.CONVEXITY.value: 7.32, globalShapeDescriptorTypes.ECCENTRICITY.value : 7.97,
+                     globalShapeDescriptorTypes.DIAMETER.value : 6.24, propertyDescriptorTypes.A3.value : 55.235, 
+                     propertyDescriptorTypes.D1.value : 1, propertyDescriptorTypes.D2.value : 20.21, 
+                     propertyDescriptorTypes.D3.value : 40.89, propertyDescriptorTypes.D4.value: 13
         }

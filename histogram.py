@@ -94,17 +94,23 @@ class Graph():
 
     def getlinePlot(self, data, title):
         #df1 = pd.read_csv('basicdata.csv')
-        #df1 = pd.read_csv('features.csv')
-        df1 = pd.read_csv('normalisedDBdata.csv')
+        df1 = pd.read_csv('features.csv')
+        
+        #df1 = pd.read_csv('normalisedDBdata.csv')
 
-        data_1 = df1[data]
-        #data_2 = df2[data]
-        #plt.plot(data_1)
-        plt.plot(data_1, label=title)
-        plt.plot(data_2, label=title + ' normalised')
-        plt.xlabel("Model nr.")
-        plt.ylabel("Value of data")
-        plt.legend(loc="best")
+        for cls in df1['Class'].unique():
+            data_1 = df1.loc[df1['Class'] == cls]
+            print(df1.loc[df1['Class'] == cls])
+            data_1 = data_1[data]
+            print(data_1)
+            #data_2 = df2[data]
+            #plt.plot(data_1)
+            plt.plot(data_1, label=cls)
+            #plt.plot(data_2, label=title + ' normalised')
+            plt.xlabel("Model nr.")
+            plt.ylabel("Value of data")
+            plt.legend(loc="best")
+            plt.show()
 
     def getLinePlotDescriptor(self, data, bins = list(range(1,9))):
         

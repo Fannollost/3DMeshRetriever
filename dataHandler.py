@@ -22,8 +22,8 @@ class dataExporter:
         for d in range(len(data)):
             self.writer.writerow(data[d].values())
 
-def exportEvaluation(evaluation):
-    makeCSVfromArray(evaluation, 'evaluation.csv')
+def exportEvaluation(evaluation, path):
+    makeCSVfromArray(evaluation, path)
 
 def normaliseFeatures(featuresfile, toSave):
     df = pd.read_csv(featuresfile)
@@ -76,14 +76,14 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
     distances = []
     for a in range(len(DB)):
         obj_a = DB[a]
-        print(obj_a[0].lower() + "/" + obj_a[1].lower())
+        #print(obj_a[0].lower() + "/" + obj_a[1].lower())
 
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
         distance = euclidianDist(obj_a, query_mesh_features)
 
         name_a = obj_a[0] + "/" + obj_a[1]
-        print((name_a,str(distance)))
+        #print((name_a,str(distance)))
         distances.append((name_a,distance))
     
     sorted_result = sorted(distances,key=lambda couple:couple[1])
@@ -168,7 +168,7 @@ def getKNNDistanceToMesh(folder, mesh, nrOfResults):
 
 def getFeatures():
     df = pd.read_csv('featuresnormalised.csv')
-    print(df)
+    #print(df)
     header = df.columns.tolist()
     data_array = df.to_numpy().tolist()
     return data_array, header

@@ -28,6 +28,7 @@ class Evaluation:
                 if(classToEvaluate != row["Class"]):
                     continue             
             distances = getDistanceToMesh(row["Class"], row["File"], self.getObjectAmount(row["Class"]))
+            print(row["Class"])
             resultsArray[row["Class"] + "/" + row["File"]] = distances
 
         evaluation = []
@@ -48,8 +49,8 @@ class Evaluation:
                     falsePositives += 1
             trueNegatives = self.objectAmount - falsePositives - self.getObjectAmount(queryClass)
             falseNegatives = self.getObjectAmount(queryClass) - truePositives
-            print("TRUE: " + str(truePositives + trueNegatives) )
-            print("TOT" + str(self.objectAmount))
+            #print("TRUE: " + str(truePositives + trueNegatives) )
+            #print("TOT" + str(self.objectAmount))
             result = {
                 "class": queryClass,
                 "file": queryFile,

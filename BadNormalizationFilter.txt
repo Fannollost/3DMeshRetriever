@@ -1,0 +1,115 @@
+AquaticAnimal,m59.obj
+		bookset-weird
+		bus-weird
+Bus,D00411.obj
+Bus,D00084.obj
+Car,m1510.obj
+City,D01101.obj
+ClassicPiano,D00009.obj
+		classicpiano-weird
+		computerkeyboard-weird
+		drum-weird
+Humanhead,D00013.obj
+Humanhead,D00061.obj
+Humanhead,D00072.obj
+Humanhead,D00106.obj
+Humanhead,D00131.obj
+Humanhead,D00205.obj
+Humanhead,D00313.obj
+Humanhead,D00434.obj
+Humanhead,D00487.obj
+Humanhead,D00488.obj
+Humanhead,D00578.obj
+Humanhead,D00591.obj
+Humanhead,D00610.obj
+Humanhead,D00629.obj
+Humanhead,D00652.obj
+Humanhead,D00690.obj
+Humanhead,D00758.obj
+Humanhead,D00910.obj
+Humanhead,D00984.obj
+Insect,D00895.obj
+Knife,D01015.obj,
+Knife,D01025.obj,
+Knife,D01032.obj
+Knife,D01051.obj
+Knife,D01054.obj
+Knife,D01057.obj
+Knife,D01063.obj
+Knife,D01075.obj
+Knife,D01077.obj
+Knife,D01119.obj
+Knife,D01120.obj
+Knife,D01132.obj
+Knife,D01150.obj
+Knife,D01160
+Knife,D01168
+Knife,D01174
+Knife,D01187
+Knife,D01189
+Mug,D00923.obj
+Musical_Instrument,m633.obj,
+PianoBoard,D00966.obj
+		pianoboard-weird
+RectangleTable,m910.obj
+RectangleTable,m892.ob
+RectangleTable,m871.obj
+RoundTable,m926.obj
+RoundTable,m924.obj,
+RoundTable,m929.obj
+RoundTable,m925.obj
+RoundTable,D00194.obj
+RoundTable,D00407.obj
+RoundTable,D00107.obj
+Skyscraper,D00729.obj
+		spoon-weird
+Starship,m1357.obj,
+Sword,D00807.obj
+Sword,D00916.ob
+Tool,m1102.obj,
+Tool,m1102.obj,
+Train,D01008.obj
+Train,D01014,
+Train,D01027
+Train,D01031
+Train,D01035
+Train,D01047
+Train,D01055
+Train,D01059
+Train,D01061
+Train,D01064
+Train,D01089
+Train,D01094
+Train,D01095
+Train,D01134
+Train,D01137
+Train,D01147
+Train,D01149
+Train,D01163
+Train,D01180			---82
+Truck,D00002
+Truck,D00003
+Truck,D00010
+Truck,D00029
+Truck,D00047
+Truck,D00056
+Truck,D00112
+Truck,D00158
+Truck,D00241
+Truck,D00287
+Truck,D00303
+Truck,D00331
+Truck,D00406
+Truck,D00424
+Truck,D00518
+Truck,D00804
+Truck,D00835
+Truck,D00926
+Truck,D00947
+Truck,D00987				---102
+	TruckNonContainerWeirdAsHell
+Vase,m541.obj
+	TViolinWeirdAsHell
+
+++175
+== 277

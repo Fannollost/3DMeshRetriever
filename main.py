@@ -10,6 +10,7 @@ from histogram import Graph
 import paths
 from tsne import tsne, getColor
 import pylab
+from distance import getOptimizedWeights
 import mplcursors
 from shapeDescriptors import weight
 import numpy as np
@@ -108,6 +109,14 @@ def DistanceMatrix():
     getAllDistances()
 
 #------------------------------------------------------------------------------------
+#FOR OPTIMZIED WEIGHT  USE:           python main.py optimizeweight
+#------------------------------------------------------------------------------------
+def OptimizeWeight():
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    features, labels = getFeatures()
+    print(getOptimizedWeights(features,labels))
+
+#------------------------------------------------------------------------------------
 #FOR VISUALIZATION USE:             python main.py tsne
 #------------------------------------------------------------------------------------
 def VisualizeFeatureSpace():
@@ -145,10 +154,11 @@ def EvaluateCBRS(k_nearest):
     #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     eval = Evaluation("featuresnormalised.csv")
     evaluation = eval.evaluateAccuracyOfDB(k_nearest)
+    exportEvaluation(evaluation, 'evaluationPerobj.csv')
     evaluation = eval.getStatsPerClass(evaluation)
     stats = eval.getOverallStats(evaluation)
     print(stats)
-    exportEvaluation(evaluation)
+    exportEvaluation(evaluation, 'evaluation.csv')
  
 
 #------------------------------------------------------------------------------------
@@ -172,15 +182,17 @@ def Graphs():
     #h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
-    #h.getlinePlot("Barycenter distance to origin", "Barycenter distance to origin")
-    h.getLinePlotDescriptors("featuresnormalised.csv")
-    h.showPlots()
+    h.getlinePlot("Surface Area", "Surface Area")
+    #h.getLinePlotDescriptors("featuresnormalised.csv")
+    #h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
 
 def main():
     args = sys.argv
     
+    if(sys.argv[1] == input.OPTIMIZE):
+        OptimizeWeight()
     #FOR DISTANCE MATRIX USE:           python main.py distance
     if(sys.argv[1] == input.DISTANCE):
         DistanceMatrix()

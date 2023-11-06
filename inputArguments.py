@@ -13,7 +13,7 @@ NORMALISED = 'normalised'
 DISTANCE = 'distance'
 TSNE = 'tsne'
 EVALUATE = 'evaluate'
-
+OPTIMIZE = 'optimizeweight'
 MINIDB = 'minidb/'
 MICRODB = 'microdb/'
 DB = 'db/'
