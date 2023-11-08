@@ -49,6 +49,12 @@ class Evaluation:
                     falsePositives += 1
             trueNegatives = self.objectAmount - falsePositives - self.getObjectAmount(queryClass)
             falseNegatives = self.getObjectAmount(queryClass) - truePositives
+            precision = truePositives / (truePositives + falsePositives)
+            sensitivity = truePositives / (truePositives + falseNegatives)
+            if(precision + sensitivity != 0): 
+                f1 = (2*precision*sensitivity) / (precision + sensitivity)
+            else:
+                f1 = 0
             #print("TRUE: " + str(truePositives + trueNegatives) )
             #print("TOT" + str(self.objectAmount))
             result = {
@@ -59,9 +65,10 @@ class Evaluation:
                 "trueNegatives": trueNegatives,
                 "falseNegatives": falseNegatives,
                 "Specificity": trueNegatives / (falsePositives + trueNegatives),
-                "Sensitivity": truePositives / (truePositives + falseNegatives),
-                "Precision" : truePositives / (truePositives + falsePositives),
-                "Accuracy" : (truePositives + trueNegatives) / self.objectAmount
+                "Sensitivity": sensitivity,
+                "Precision" : precision,
+                "Accuracy" : (truePositives + trueNegatives) / self.objectAmount,
+                "F1" : f1
             }
             evaluation.append(result)
 
@@ -75,7 +82,7 @@ class Evaluation:
 
     def getOverallStats(self, evaluation):
         overall = {}
-        for m in ['Specificity', 'Sensitivity', 'Precision', 'Accuracy']:
+        for m in ['Specificity', 'Sensitivity', 'Precision', 'Accuracy', 'F1']:
             average, median, minimum, maximum = self.getAllStats(m,evaluation)
             overall[m + "/average"] = average
             overall[m + "/median"] = median
@@ -112,12 +119,14 @@ class Evaluation:
             sensitivity = self.calculateMetric("Sensitivity", classSpecific)
             precision = self.calculateMetric("Precision", classSpecific)
             accuracy = self.calculateMetric("Accuracy", classSpecific)
+            f1 = self.calculateMetric("F1", classSpecific)
             result = {
                 "Class" : c,
                 "Specificity" : specificity,
                 "Sensitivity" : sensitivity,
                 "Precision" : precision,
-                "Accuracy" : accuracy
+                "Accuracy" : accuracy,
+                "F1" : f1
             }
             classEvaluation.append(result)
         return classEvaluation

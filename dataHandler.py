@@ -55,6 +55,8 @@ def getAllDistances():
             obj_a = DB[a]
             obj_b = DB[b]
             distance = euclidianDist(obj_a, obj_b)
+            emdDist = emd(obj_a,obj_b)
+            distance = distance + emdDist
             name_a = obj_a[0] + "/" + obj_a[1]
             name_b = obj_b[0] + "/" + obj_b[1]
             distances[name_a, name_b] = distance
@@ -81,7 +83,8 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
         distance = euclidianDist(obj_a, query_mesh_features)
-
+        emdDist = emd(obj_a,query_mesh_features)
+        distance = distance + emdDist
         name_a = obj_a[0] + "/" + obj_a[1]
         #print((name_a,str(distance)))
         distances.append((name_a,distance))

@@ -151,7 +151,7 @@ def VisualizeFeatureSpace():
     pylab.show()
 
 def EvaluateCBRS(k_nearest):
-    #normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
+    normaliseFeatures(paths.featuresCSV, 'featuresnormalised.csv')
     eval = Evaluation("featuresnormalised.csv")
     evaluation = eval.evaluateAccuracyOfDB(k_nearest)
     exportEvaluation(evaluation, 'evaluationPerobj.csv')
@@ -171,10 +171,11 @@ def Graphs():
     #h.getHisto('basicdata.csv','Barycenter distance to origin','basic data')
     # h.getHisto(paths.normalisedDBCSV,'Barycenter distance to origin', 'normalised data')
     #h.getBoxplot('Barycenter distance to origin', 'Barycenter distance')
-    #h.getHisto('basicdata.csv', 'Amount of Vertices', 'Amount of Vertices')
+    #h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance to origin')
     #h.getHisto('basicdata.csv', 'Amount of Faces', 'Amount of Faces')
-    #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
-    #h.getHisto(paths.normalisedDBCSV, 'Amount of Vertices', 'Amount of Vertices')
+    
+    h.getHisto('basicdata.csv', 'Eigenvectors', 'Eigenvectors')
+    h.getHisto(paths.normalisedDBCSV, 'Eigenvectors', 'Eigenvectors')
     #h.getHisto(paths.normalisedDBCSV, 'Amount of Faces', 'Amount of Faces')
     #h.getHisto('basicdata.csv', 'Barycenter distance to origin', 'Barycenter distance')
     #h.getlinePlot('Barycenter distance to origin', 'Barycenter distance')
@@ -182,9 +183,9 @@ def Graphs():
     #h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
-    h.getlinePlot("Surface Area", "Surface Area")
+    #h.getlinePlot("Surface Area", "Surface Area")
     #h.getLinePlotDescriptors("featuresnormalised.csv")
-    #h.showPlots()
+    h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
 

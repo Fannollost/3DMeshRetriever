@@ -65,6 +65,7 @@ def euclidianDist(f1, f2):
         k = ka[:2]
         key = key + 2
         if k=="A3" or k=="D1" or k=="D2" or k=="D3" or k=="D4":
+            continue
             featureDist = (weight[k] / (max_weight)) * abs(f1[key] - f2[key]) ** 2
             tot_weight += weight[k] / (max_weight)
             sumDist += featureDist
@@ -75,17 +76,18 @@ def euclidianDist(f1, f2):
     return sumDist**0.5
 
 def getProperty(key):
-    if(key >= 7 and key < 37):
+    if(key >= 7 and key < 57):
         return "A3"
-    elif(key >= 37 and key < 67):
+    elif(key >= 57 and key < 107):
         return "D1"
-    elif(key >= 67 and key < 97):
+    elif(key >= 107 and key < 157):
         return "D2"
-    elif(key >= 97 and key < 127):
+    elif(key >= 157 and key < 207):
         return "D3"
-    elif(key >= 127 and key < 157):
+    elif(key >= 207 and key < 257):
         return "D4"
     else :
+        print(key)
         return list(weight.keys())[key]
     
 def get_cosine_distance(vec_a, vec_b, normalize=True):
@@ -98,9 +100,17 @@ def get_cosine_distance(vec_a, vec_b, normalize=True):
     
     return dist
 
-def emd(v1,v2):
-    if len(v1) != len(v2):
+def emd(f1,f2):
+    if len(f1) != len(f2):
         raise ValueError("Not same lenght")
-    v1 = v1[2:]
-    v2 = v2[2:]
-    return wasserstein_distance(v1,v2)
+    f1 = f1[9:]
+    f2 = f2[9:]
+    a3 = np.full(50,weight['A3'] / 250)
+    d1 = np.full(50,weight['D1'] / 250)
+    d2 = np.full(50,weight['D2'] / 250)
+    d3 = np.full(50,weight['D3'] / 250)
+    d4 = np.full(50,weight['D4'] / 250)
+    w = flatten_list([list(a3), list(d1), list(d2), list(d3), list(d4)])
+    distance = wasserstein_distance(f1,f2,w)
+    
+    return distance **0.5

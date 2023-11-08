@@ -49,6 +49,7 @@ Knife,D01187
 Knife,D01189
 Mug,D00923.obj
 Musical_Instrument,m633.obj,
+checkMultiSeat & CHECK SHELF!
 PianoBoard,D00966.obj
 		pianoboard-weird
 RectangleTable,m910.obj

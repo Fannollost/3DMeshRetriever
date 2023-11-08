@@ -12,6 +12,7 @@ from itertools import combinations
 from helper import getEveryElementFromEveryList
 from meshDataTypes import dataTypes as dataType
 import csv
+import multiprocessing
 
 import pandas as pd
 import open3d
@@ -37,7 +38,7 @@ class FeatureExtractor:
         if SapeProperties:
             A3 = self.getA3(samples) 
             print("done with A3")
-            D1 = self.getD1(samples)
+            D1 = self.getD1(len(self.pymesh.mesh(0).vertex_matrix()))
             print("done with D1")
             D2 = self.getD2(samples)
             print("done with D2")
@@ -62,7 +63,7 @@ class FeatureExtractor:
     def getA3(self, samples):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
-
+    
         for i in range(samples):
             points = random.sample(range(0,len(vertices)), 3)
             v0 = vertices[points[0]]
@@ -70,9 +71,9 @@ class FeatureExtractor:
             v2 = vertices[points[2]]
             allSamples.append(angleBetween(vector(v0,v1), vector(v0,v2)))
 
-        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.A3.value]), bins = 30)
+        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.A3.value]), bins = 50)
         return self.normalise(yAxis, binEdges)
-    
+
     def getD1(self, samples):
         vertices = self.pymesh.mesh(0).vertex_matrix()
         allSamples = []
@@ -80,7 +81,7 @@ class FeatureExtractor:
             idx = random.randint(0, len(vertices) - 1)
             vertex = vertices[idx]
             allSamples.append(length(vertex))
-        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D1.value]), bins=30)
+        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D1.value]), bins= 50)
         return self.normalise(yAxis,binEdges)
     
     def getD2(self,samples):
@@ -92,7 +93,7 @@ class FeatureExtractor:
             v0 = vertices[points[0]]
             v1 = vertices[points[1]]
             allSamples.append(dist(v0, v1))
-        yAxis, binEdges = np.histogram(allSamples,range = (0, histogramLimits[propertyDescriptors.D2.value]), bins=30)
+        yAxis, binEdges = np.histogram(allSamples,range = (0, histogramLimits[propertyDescriptors.D2.value]), bins= 50)
         return self.normalise(yAxis,binEdges)
 
     def getD3(self,samples): 
@@ -106,7 +107,7 @@ class FeatureExtractor:
             v2 = vertices[points[2]]
             allSamples.append(areaTriangle(v0,v1,v2) ** 0.5)
 
-        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D3.value]), bins = 30)
+        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D3.value]), bins = 50)
         return self.normalise(yAxis, binEdges)
     
     def getD4(self, samples):
@@ -121,7 +122,7 @@ class FeatureExtractor:
             v3 = vertices[points[3]]
             allSamples.append(volumeTetrahydron(vector(v0,v1), vector(v0,v2), vector(v0,v3)))
 
-        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D4.value]), bins = 30)
+        yAxis, binEdges = np.histogram(allSamples, range = (0, histogramLimits[propertyDescriptors.D4.value]), bins = 50)
         return self.normalise(yAxis, binEdges)
 
     def normalise(self, yAxis, binEdges):
