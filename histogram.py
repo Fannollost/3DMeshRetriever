@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
+import json
 
 # Parameters
 #N = 100
@@ -15,7 +16,7 @@ class Graph():
         descriptors = []
         for j in ['A3','D1','D2','D3','D4']:
             descriptor = []
-            for i in range(30):
+            for i in range(50):
                 descriptor.append(j + "_" + str(i))
             descriptors.append(descriptor)
         return descriptors
@@ -68,6 +69,34 @@ class Graph():
                 count = count + 1
 
         plt.show()
+
+
+    def getEvaluation(self,csv,data, title,subdata = ''):
+        df = pd.read_csv(csv)
+        labels = list(df['Class'])
+        db_data = df[data]
+        values = []
+        if(subdata != ''): 
+            for d in db_data:
+                d = d.strip()
+                d = d.replace("'", "\"")
+                data = json.loads(d)
+                value = data.get('Average', None)
+                values.append(value)
+        # Compute histogram
+        sorted_lab_val = sorted(list(zip(labels,values)), key = lambda x: x[1])
+        sorted_labels, sorted_values = zip(*sorted_lab_val)
+
+        plt.bar(sorted_labels,sorted_values)
+        #for i, value in enumerate(sorted_values):
+        #    plt.text(i, value, str(value), ha='center', va='bottom')
+        plt.xticks(rotation=90)
+        plt.xlabel('Class')
+        plt.ylabel('Accuracy')
+        plt.title('Average Accuracy per class')
+        #counts, bins = np.histogram(db_data, bins=no_bins, range=[8000,12000])
+        #print(counts)
+        #print(bins)
 
 
     def getBar(self, csv, data, title):

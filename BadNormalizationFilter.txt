@@ -9,6 +9,7 @@ ClassicPiano,D00009.obj
 		classicpiano-weird
 		computerkeyboard-weird
 		drum-weird
+gun,m672.obj
 Humanhead,D00013.obj
 Humanhead,D00061.obj
 Humanhead,D00072.obj

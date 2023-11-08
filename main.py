@@ -144,7 +144,7 @@ def VisualizeFeatureSpace():
                 h = h[:2]
             f.append(feat[head] * weight[h])
         weightedFeatures.append(f)
-    Y = tsne(np.array(weightedFeatures),2,159,45)
+    Y = tsne(np.array(weightedFeatures),2,159,15)
     f = pylab.scatter(Y[:, 0], Y[:, 1], 5, allColors)
     cursor = mplcursors.cursor(f)
     cursor.connect("add", lambda sel: sel.annotation.set_text(labels[sel.index]))
@@ -184,7 +184,8 @@ def Graphs():
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot("Surface Area", "Surface Area")
-    h.getLinePlotDescriptors("featuresnormalised.csv")
+    #h.getLinePlotDescriptors("featuresnormalised.csv")
+    h.getEvaluation("evaluation.csv", 'Precision', 'Precision average', 'Average')
     h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
