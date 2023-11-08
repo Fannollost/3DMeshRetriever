@@ -119,10 +119,11 @@ class QueryWindow:
             file = Path(self.selected_files[0])
             basepath, fileName = os.path.split(file)
             basepath, className = os.path.split(basepath)
-            filepaths = getKNNDistanceToMesh(className, fileName, self.spinbox.get())
-            paths = []
+            filepaths = getDistanceToMesh(className, fileName, self.spinbox.get())
+            paths = [basepath + "/" + className + "/" + fileName]
             for path in filepaths:
                 paths.append(basepath + "/"+ path)
+            print(paths)
             display_mesh_list(paths)
 
     def open_Error_window(self):
