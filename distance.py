@@ -65,7 +65,6 @@ def euclidianDist(f1, f2):
         k = ka[:2]
         key = key + 2
         if k=="A3" or k=="D1" or k=="D2" or k=="D3" or k=="D4":
-            continue
             featureDist = (weight[k] / (max_weight)) * abs(f1[key] - f2[key]) ** 2
             tot_weight += weight[k] / (max_weight)
             sumDist += featureDist
@@ -87,7 +86,6 @@ def getProperty(key):
     elif(key >= 207 and key < 257):
         return "D4"
     else :
-        print(key)
         return list(weight.keys())[key]
     
 def get_cosine_distance(vec_a, vec_b, normalize=True):

@@ -83,8 +83,8 @@ def getDistanceToMesh(folder, mesh, nrOfResults):
         if(obj_a[0].lower() + "/" + obj_a[1].lower() == folder.lower() + "/" + mesh.lower()):
             continue
         distance = euclidianDist(obj_a, query_mesh_features)
-        emdDist = emd(obj_a,query_mesh_features)
-        distance = distance + emdDist
+        #emdDist = emd(obj_a,query_mesh_features)
+        distance = distance #+ emdDist
         name_a = obj_a[0] + "/" + obj_a[1]
         #print((name_a,str(distance)))
         distances.append((name_a,distance))

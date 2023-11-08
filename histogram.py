@@ -42,7 +42,7 @@ class Graph():
     def getLinePlotDescriptors(self, csv):
         df = pd.read_csv(csv)
         #print(len(df['Class'].unique()))
-        height = 8
+        height = 7
         width = 9
         DescriptorList = self.getDescriptorList()
         #print(DescriptorList)
@@ -54,7 +54,6 @@ class Graph():
             # Retrieve descriptor name and columns
             descriptorColumns = DescriptorList[i]
             currentName = DescriptorName[i]
-
             # Retrieve the data for each class
             for className in df['Class'].unique():
                 classData = df.loc[df['Class'] == className]
@@ -62,10 +61,10 @@ class Graph():
                 currentData = classData[descriptorColumns].T
 
                 # Get the coordinates of the subplot and put the data in it
-                x = int((count / width) - 1)
+                x = int((count / width))
                 y = count % width
                 axis[x,y].plot(currentData, label=className)
-                axis[x,y].set_title(currentName + ' descriptor - ' + className)
+                axis[x,y].set_title(currentName + ' ' + className)
                 count = count + 1
 
         plt.show()
