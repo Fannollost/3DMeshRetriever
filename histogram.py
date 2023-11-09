@@ -2,6 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
 import json
+import seaborn as sns
+from helper import getEveryElementFromEveryList
+import ast
 
 # Parameters
 #N = 100
@@ -145,6 +148,21 @@ class Graph():
         plt.plot(data)
 
         pass
+
+    def getViolinPlot(self,data, datatype):
+        df = pd.read_csv(data)
+        data_1 = df[datatype].tolist()
+        values = []
+        for value in data_1:
+            value = ast.literal_eval(value)
+            values.append([value[0][0],
+            value[1][1],
+            value[2][2]])
+
+
+        df = pd.DataFrame(values, columns=['X', 'Y', 'Z'])
+        sns.set(style="whitegrid")
+        sns.violinplot(data=df,  cut =0)
 
     def showPlots(self):
         plt.show()
