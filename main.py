@@ -129,6 +129,7 @@ def VisualizeFeatureSpace():
         labels.append(allClasses[cIdx] + "-" + allModels[cIdx])
 
     classes = get_1_from_list(allClasses)
+    print(len(classes))
     colors = getColor(classes)
     allColors = [ colors[c] for c in allClasses]
     #colors = [allClassesfor color in colors] allClasses
@@ -185,9 +186,9 @@ def Graphs():
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot("Surface Area", "Surface Area")
     #h.getLinePlotDescriptors("featuresnormalised.csv")
-    #h.getEvaluation("evaluation.csv", 'Precision', 'Precision average', 'Average')
+    h.getEvaluation("evaluation.csv", 'Precision', 'Precision average', 'Average')
     #h.getHisto('normalisedDBData.csv', "Eigenvalues", "Eigenvalues")
-    h.getViolinPlot('normalisedDBData.csv', 'Eigenvectors')
+    #h.getViolinPlot('normalisedDBData.csv', 'Eigenvectors')
     h.showPlots()
     #h.getHisto('basicdata.csv', 'Biggest axis boundingbox', 'Biggest axis boundingbox')
     #h.getlinePlot('Biggest axis boundingbox', 'Biggest axis boundingbox')

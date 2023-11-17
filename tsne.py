@@ -18,8 +18,22 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 def getColor(classes):
-    cmap = plt.get_cmap('viridis')
-    colors = cmap(np.linspace(0, 1, len(classes)))
+    colors = [
+        'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w',
+        'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure',
+        'beige', 'bisque', 'black', 'blanchedalmond', 'blueviolet',
+        'brown', 'burlywood', 'cadetblue', 'chartreuse',
+        'coral', 'cornflowerblue', 'cornsilk', 'crimson',
+        'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen',
+        'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange',
+        'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue',
+        'darkslategray', 'darkturquoise', 'darkviolet', 'deeppink',
+        'deepskyblue', 'dimgray', 'dodgerblue', 'floralwhite',
+        'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold',
+        'goldenrod', 'gray', 'greenyellow', 'honeydew', 'hotpink',
+        'indianred', 'indigo'
+    ]
+    print(len(colors))
     key_value_pairs = {classes[i]: colors[i] for i in range(len(colors))}
     return key_value_pairs    
 
